@@ -90,7 +90,7 @@ var AppSyncBox = React.createClass({
                 </nav>
                 {errorBox}
                 <PortalBox portal={this.state.portal} clearError={this.clearError} errorHandler={this.handleError}
-                    errorData={this.state.errorData} portalMembers={this.state.portalMembers}/>
+                    errorData={this.state.errorData} portalMembers={this.state.portalMembers} listMembers={this.doSearch}/>
             </div>
         );
     }

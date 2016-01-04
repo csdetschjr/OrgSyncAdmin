@@ -7,6 +7,10 @@ var PortalBox = React.createClass({
     //
     changeToggleState: function(newState)
     {
+        if(newState == 0)
+        {
+            this.props.listMembers(this.props.portal);
+        }
         this.setState({toggleState: newState, inputListData: [], outputListData: []});
         this.props.clearError();
     },
