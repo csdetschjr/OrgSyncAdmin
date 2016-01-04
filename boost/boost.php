@@ -3,7 +3,8 @@
  * @author Micah Carter <mcarter at tux dot appstate dot edu>
  */
 
-$proper_name  = 'AppSync';
+
+$proper_name  = 'appsync';
 $version      = '0.0.1';
 $register     = false;
 $unregister   = false;

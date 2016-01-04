@@ -8,7 +8,7 @@ $settings = array('registrarEmail'              => null,
                   'internationalOfficeEmail'    => null,
                   'fromEmail'                   => null,
                   'emailDomain'                 => null,
-                  'systemName'                  => 'AppSync',
+                  'systemName'                  => 'appsync',
                   'wsdlUri'                     => ''
             );
 

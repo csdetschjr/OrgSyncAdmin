@@ -23,7 +23,8 @@
 */
 
 $link[] = array(
-        'label'         => 'AppSync',
+
+        'label'         => 'appsync',
         'restricted'    => true,
         'url'           => 'index.php?module=appsync',
         'description'   => 'Manage OrgSync',

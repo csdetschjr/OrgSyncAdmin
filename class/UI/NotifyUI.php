@@ -23,7 +23,7 @@ class NotifyUI implements UI
      * @return - Properly styled notifications.
      */
     public function display()
-    {        
+    {
         $notifications = \NQ::popAll('appsync');
         $tags = array();
 
