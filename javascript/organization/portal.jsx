@@ -25,11 +25,6 @@ var PortalBox = React.createClass({
             parsedTextData[i] = this.removeEmail(parsedTextData[i]);
         }
         this.createData(parsedTextData, "Add");
-        var dataLength = this.state.inputListData.length;
-        for(i = 0; i < dataLength; i++)
-        {
-            this.processAdd(i);
-        }
     },
     //
     removeSubmit: function(removeText)
@@ -40,11 +35,6 @@ var PortalBox = React.createClass({
             parsedTextData[i] = this.removeEmail(parsedTextData[i]);
         }
         this.createData(parsedTextData, "Remove");
-        var dataLength = this.state.inputListData.length;
-        for(i = 0; i < dataLength; i++)
-        {
-            this.processRemove(i);
-        }
     },
     //
     parseData: function(text)
@@ -96,11 +86,13 @@ var PortalBox = React.createClass({
     {
         if(confirm("This will remove all students from this organization...\n\nAre you sure?"))
         {
-            console.log("confirmed")
-        }
-        else
-        {
-            console.log("noped out")
+            var membersToRemove = Array();
+            var i = 0;
+            for(i; i < this.props.portalMembers.length; i++)
+            {
+                membersToRemove[i] = this.props.portalMembers[i].email;
+            }
+            this.createData(membersToRemove, "Remove");
         }
     },
     //
@@ -122,7 +114,6 @@ var PortalBox = React.createClass({
         }
     },
     //
-    //
     addStudent: function(addInput, index)
     {
         var inputData = {inputData: addInput, portalId: this.props.portal.id};
@@ -132,7 +123,6 @@ var PortalBox = React.createClass({
             data: inputData,
             success: function(data)
             {
-                console.log(addInput)
                 var outputData = this.state.outputListData;
                 outputData[index] = JSON.parse(data);
 
@@ -153,7 +143,6 @@ var PortalBox = React.createClass({
             data: inputData,
             success: function(data)
             {
-                console.log(removeInput)
                 var outputData = this.state.outputListData;
                 outputData[index] = JSON.parse(data);
                 this.setState({outputListData: outputData});
@@ -409,6 +398,8 @@ var ControlBox = React.createClass({
             }
             if(this.props.state == 3 || this.props.state == 4)
             {
+                console.log(this.props.inputData)
+                console.log(this.props.outputData)
                 if(this.props.inputData == undefined)
                 {
                     return (<div></div>);
@@ -487,8 +478,6 @@ var ControlBox = React.createClass({
 
                 var percentComplete = (cmpCnt / this.props.inputData.length) * 100;
 
-                console.log(errorOccurred)
-
                 return(
                     <div style={controlStyle}>
                         <div className="row">
@@ -530,7 +519,6 @@ var ProgressBarBox = React.createClass({
             complete = true;
             active = false;
         }
-        console.log(this.props.percentComplete)
         if(this.props.errorOccurred)
         {
             success = false;
