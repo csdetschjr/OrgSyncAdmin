@@ -51,8 +51,6 @@ CREATE TABLE appsync_settings (
     PRIMARY KEY(setting)
 );
 
-INSERT INTO appsync_settings (setting, value) VALUES ('ORGSYNC_KEY', 'GbBHsBinbv5lWyK7Lnejrg');
-INSERT INTO appsync_settings (setting, value) VALUES ('BASE_URL', 'https://api.orgsync.com/api/v2/');
 
 
 COMMIT;

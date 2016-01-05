@@ -35,8 +35,8 @@ class AjaxGetPortalMembers {
 
     function getOrgMembers($org_id){
         // This will need to be moved to the settings.
-        $key = 'key';
-        $base_url = 'orgbaseurl';
+        $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
+        $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
         $curl = curl_init();
         //get organization members by organization id
         curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $base_url."orgs/$org_id/accounts?key=$key"));

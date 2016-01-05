@@ -19,7 +19,7 @@ class AjaxRemoveStudent extends \AppSync\Command {
             $banner = $this->getBannerIDFromEmail($input);
             if($banner === false)
             {
-                echo json_encode(array('status' => 'error', 'message' => 'Email/Username was invalid'));
+                echo json_encode(array('status' => 0));
                 exit;
             }
         }
@@ -79,8 +79,8 @@ class AjaxRemoveStudent extends \AppSync\Command {
     *
     */
     function removeAccount($user_id, $org_id){
-        $key = 'key';
-        $base_url = 'orgbaseurl';
+        $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
+        $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
         $id = $this->getIDFromUsername($user_id);
 
         $url = $base_url."/orgs/$org_id/accounts/remove";
@@ -99,8 +99,8 @@ class AjaxRemoveStudent extends \AppSync\Command {
 
 
     function getIDFromUsername($username){
-        $key = 'key';
-        $base_url = 'orgbaseurl';
+        $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
+        $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
         $curl = curl_init();
         curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $base_url."accounts/username/$username?key=$key"));
         $result = curl_exec($curl);
@@ -116,7 +116,7 @@ class AjaxRemoveStudent extends \AppSync\Command {
 
     function getStudentByBanner($banner)
     {
-        $base_url = 'bannerurl';
+        $base_url = \AppSync\SettingFactory::getSetting('banner_url')->getValue();
 
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);

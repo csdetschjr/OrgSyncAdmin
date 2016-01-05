@@ -1,5 +1,5 @@
 {
-  "name": "appsync",
+  "name": "AppSync",
   "version": "0.0.0",
   "description": "Web app for interfacing and adding students to the OrgSync Portal.",
   "main": "index.php",
