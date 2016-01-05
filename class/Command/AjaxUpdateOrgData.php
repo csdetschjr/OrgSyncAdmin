@@ -25,8 +25,8 @@ class AjaxUpdateOrgData extends \AppSync\Command {
 
       private function getAllOrganizations(){
           // This will need to be moved to the settings.
-          $key = 'jKyMOiAVkKxSX5IWy-B6rNna5IW6qGT3YzGm3unyR0A';
-          $base_url = 'https://sandbox.orgsync.com/api/v2/';
+          $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
+          $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
           $curl = curl_init();
           curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
           //Request list of all orginizations

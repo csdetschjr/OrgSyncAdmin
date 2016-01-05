@@ -6,17 +6,19 @@ use \Database;
 
 class SettingFactory {
 
-    public static function getOrgSyncKey()
+    public static function getSetting($setting)
     {
         $db = PdoFactory::getPdoInstance();
 
-        $query = 'SELECT * FROM appsync_umbrella WHERE setting = orgsync_key';
+        $query = "SELECT * FROM appsync_settings WHERE setting = :setting";
 
         $stmt = $db->prepare($query);
 
-        $stmt->execute();
+        $params = array('setting' => $setting);
+
+        $stmt->execute($params);
         $stmt->setFetchMode(\PDO::FETCH_CLASS, 'AppSync\SettingRestored');
 
-        return $stmt->fetchAll();
+        return $stmt->fetch();
     }
 }

@@ -74,8 +74,8 @@ class AjaxAddStudent extends \AppSync\Command {
     }
 
     function userToOrg($user_id, $org_id){
-        $key = 'jKyMOiAVkKxSX5IWy-B6rNna5IW6qGT3YzGm3unyR0A';
-        $base_url = 'https://sandbox.orgsync.com/api/v2/';
+        $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
+        $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
         $id = $this->getIDFromUsername($user_id);
 
         $import_url = '';
@@ -96,8 +96,8 @@ class AjaxAddStudent extends \AppSync\Command {
     }
 
     function getIDFromUsername($username){
-        $key = 'jKyMOiAVkKxSX5IWy-B6rNna5IW6qGT3YzGm3unyR0A';
-        $base_url = 'https://sandbox.orgsync.com/api/v2/';
+        $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
+        $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
         $curl = curl_init();
         curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $base_url."accounts/username/$username?key=$key"));
         $result = curl_exec($curl);
@@ -112,7 +112,7 @@ class AjaxAddStudent extends \AppSync\Command {
 
     function getStudentByBanner($banner)
     {
-        $base_url = 'http://bansrvtest.its.appstate.edu:8086/api/';
+        $base_url = \AppSync\SettingFactory::getSetting('banner_url')->getValue();
 
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
