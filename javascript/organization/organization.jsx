@@ -107,7 +107,7 @@ var UmbrellaPickBox = React.createClass({
     },
     change: function()
     {
-        var uChoice = this.refs.umbrellaChoice.getDOMNode().value;
+        var uChoice = this.refs.umbrellaChoice.value;
         this.props.change(uChoice);
     },
     getUmbrellas: function()
@@ -139,7 +139,7 @@ var UmbrellaPickBox = React.createClass({
 
         var selectOptions = options.map(function(node)
         {
-            return(<option value={node.umbrella_id}>{node.umbrella_name}</option>)
+            return(<option key={node.umbrella_id} value={node.umbrella_id}>{node.umbrella_name}</option>)
         });
 
         return(

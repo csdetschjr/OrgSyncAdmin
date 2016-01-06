@@ -100,6 +100,26 @@ var PortalBox = React.createClass({
         }
     },
     //
+    singleRemove: function(email)
+    {
+        var name;
+        var i;
+        for(i; i < this.props.portalMembers.length; i++)
+        {
+            if(this.props.portalMembers[i].email == email)
+            {
+                name = this.props.portalMembers[i].first_name + " " + this.props.portalMembers[i].last_name;
+            }
+        }
+        if(confirm("Remove "+ name + " from this organization...\n\nAre you sure?"))
+        {
+            var inputList = Array();
+            inputList[0] = {input: this.removeEmail(email), name: '-', status: 0};
+            this.setState({inputListData: inputList});
+            this.processRemove(inputList);
+        }
+    },
+    //
     processAdd: function(addData)
     {
         var i = 0;
@@ -175,14 +195,14 @@ var PortalBox = React.createClass({
                             <h2 classsName="marginTop: 12px">{this.props.portal.name}</h2>
                         </div>
                         <div className="col-md-3 col-md-offset-4">
-                            <ButtonBox clear={this.clear} groups={this.groupCheck} state={this.state.toggleState}/>
+                            <ButtonBox clear={this.clear} groups={this.groups} state={this.state.toggleState}/>
                         </div>
                     </div>
                     <div className="col-md-12">
                         <ToggleBox toggle={this.changeToggleState} state={this.state.toggleState}/>
                         <ControlBox add={this.addSubmit} remove={this.removeSubmit} complete={this.completeState} state={this.state.toggleState}
                             inputData={this.state.inputListData} outputData={this.state.outputListData} members={this.props.portalMembers}
-                            errorData={this.props.errorData}/>
+                            errorData={this.props.errorData} singleRemove={this.singleRemove}/>
 
                     </div>
                 </div>
@@ -211,7 +231,7 @@ var ButtonBox = React.createClass({
             var groupsStyle = {marginTop: '25px'};
             return(
                 <div>
-                    <a onClick={this.clear} style={clearStyle} className="btn btn-md btn-danger">Clear</a>
+                    <a onClick={this.clear} style={clearStyle} className="btn btn-md btn-danger">Purge All Members</a>
                     <a onClick={this.groups} style={groupsStyle} className="btn btn-md btn-info">Groups</a>
                 </div>
             );
@@ -300,214 +320,295 @@ var ControlBox = React.createClass({
     {
         this.props.complete();
     },
-    click: function()
+    click: function(text)
     {
         if(this.props.state == 1)
         {
-            var addText = this.refs.addText.getDOMNode().value;
-            this.props.add(addText);
+
+            this.props.add(text);
         }
         else if(this.props.state == 2)
         {
-            var removeText = this.refs.removeText.getDOMNode().value;
-            this.props.remove(removeText);
+
+            this.props.remove(text);
         }
+    },
+    singleRemove: function(email)
+    {
+        this.props.singleRemove(email);
+    },
+    render: function()
+    {
+        if(this.props.state == 0)
+        {
+            return(
+            <ListBox members={this.props.members} singleRemove={this.singleRemove}/>
+            );
+            }
+            if(this.props.state == 1)
+            {
+                return(
+                    <AddBox click={this.click} errorData={this.props.errorData} />
+                );
+            }
+            if(this.props.state == 2)
+            {
+                return(
+                    <RemoveBox click={this.click} errorData={this.props.errorData} />
+                );
+            }
+            if(this.props.state == 3 || this.props.state == 4)
+            {
+                return(
+                    <ActionBox complete={this.completeState} inputData={this.props.inputData}
+                        outputData={this.props.outputData} state={this.props.state}/>
+                )
+            }
+        }
+    });
+
+var ListBox = React.createClass({
+    remove: function(email)
+    {
+        this.props.singleRemove(email);
+    },
+    render: function()
+    {
+        var controlStyle = {marginTop: '25px'};
+        var members = this.props.members;
+        if(members.length == 0)
+        {
+            return (<p>There are no members at present, to add some members click on the Add Members tab.</p>);
+        }
+        var memberRows = members.map(function(node){
+            return (
+                <tr key={node.email}>
+                    <td>
+                        {node.first_name} {node.last_name}
+                    </td>
+                    <td>
+                        {node.email}
+                    </td>
+                    <td>
+                        <OptionBox listRemove={this.remove} email={node.email} />
+                    </td>
+                </tr>);
+            });
+            return(
+                <div >
+                    <div className="col-md-6">
+                        <table style={controlStyle} className="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Email</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {memberRows}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+    }
+});
+
+var AddBox = React.createClass({
+    click: function()
+    {
+        var addText = this.refs.addText.value;
+        this.props.click(addText);
     },
     render: function()
     {
         var controlStyle = {marginTop: '25px'};
         var buttonStyle = {marginTop: '15px'};
-
-        if(this.props.state == 0)
+        var addError = false;
+        if(this.props.errorData.location == "Add")
         {
-            var members = this.props.members;
-            if(members.length == 0)
-            {
-                return (<p>There are no members at present, to add some members click on the Add Members tab.</p>);
-            }
-            var memberRows = members.map(function(node){
-                return (
-                    <tr>
-                        <td>
-                            {node.first_name} {node.last_name}
-                        </td>
-                        <td>
-                            {node.email}
-                        </td>
-                        <td></td>
-                    </tr>);
-                });
-                return(
-                    <div >
-                        <div className="col-md-6">
-                            <table style={controlStyle} className="table table-hover table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Student Name</th>
-                                        <th>Email</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {memberRows}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                );
-            }
-            if(this.props.state == 1)
-            {
-                var addError = false;
-                if(this.props.errorData.location == "Add")
-                {
-                    addError = true;
-                }
-                var addInputClasses = classNames({
-                    'col-md-4': true,
-                    'has-error': addError
-                });
-                return(
-                    <div>
-                        <div className="row">
-                            <div className={addInputClasses}>
-                                <textarea style={controlStyle} className="form-control" rows="5" cols="40" ref="addText"></textarea>
-                            </div>
-                        </div>
-                        <a onClick={this.click} style={buttonStyle} className="btn btn-lg btn-success">Add</a>
-                    </div>
-                );
-            }
-            if(this.props.state == 2)
-            {
-                var removeError = false;
-                if(this.props.errorData.location == "Remove")
-                {
-                    removeError = true;
-                }
-                var removeInputClasses = classNames({
-                    'col-md-4': true,
-                    'has-error': removeError
-                });
-                return(
-                    <div style={controlStyle}>
-                        <div className="row">
-                            <div className={removeInputClasses}>
-                                <textarea className="form-control" rows="5" cols="40" ref="removeText"></textarea>
-                            </div>
-                        </div>
-                        <a onClick={this.click} style={buttonStyle} className="btn btn-lg btn-success">Remove</a>
-                    </div>
-                );
-            }
-            if(this.props.state == 3 || this.props.state == 4)
-            {
-                console.log(this.props.inputData)
-                console.log(this.props.outputData)
-                if(this.props.inputData == undefined)
-                {
-                    return (<div></div>);
-                }
-                if(this.props.state == 3 && this.props.inputData.length == this.props.outputData.length)
-                {
-                    this.completeState();
-                }
-                var data = Array();
-                var i = 0;
-                var cmpCnt = 0;
-                var errorOccurred = false;
-
-                for(i; i < this.props.inputData.length; i++)
-                {
-                    var datum = Array();
-                    datum.input = this.props.inputData[i].input;
-                    if(this.props.outputData[i] == undefined)
-                    {
-                        datum.status = undefined;
-                        datum.name = undefined;
-                    }
-                    else
-                    {
-                        datum.status = this.props.outputData[i].status;
-                        datum.name = this.props.outputData[i].name;
-                        cmpCnt++;
-                        if(!datum.status)
-                        {
-                            errorOccurred = true;
-                        }
-                    }
-                    data.push(datum);
-
-                }
-                var rows = data.map(function(node){
-
-                    if(node.status == 0)
-                    {
-                        return(
-                            <tr>
-                                <td>{node.input}</td>
-                                <td><i className="fa fa-times text-danger"></i> Error retrieving student</td>
-                                <td><i className="fa fa-times text-danger"></i></td>
-                            </tr>
-                        );
-                    }
-                    else if(node.status == 1)
-                    {
-                        return(<tr>
-                                <td>{node.input}</td>
-                                <td>{node.name}</td>
-                                <td><i className="fa fa-check text-success"></i></td>
-                            </tr>
-                        );
-                    }
-                    else if(node.status == 2)
-                    {
-                        return(<tr>
-                                <td>{node.input}</td>
-                                <td>{node.name}</td>
-                                <td><i className="fa fa-times text-danger"></i></td>
-                            </tr>
-                        );
-                    }
-                    else if(node.name == undefined && node.status == undefined)
-                    {
-                        return(<tr>
-                                <td>{node.input}</td>
-                                <td><i className="fa fa-spinner fa-pulse"></i></td>
-                                <td><i className="fa fa-spinner fa-pulse"></i></td>
-                            </tr>
-                        );
-                    }
-                });
-
-                var percentComplete = (cmpCnt / this.props.inputData.length) * 100;
-
-                return(
-                    <div style={controlStyle}>
-                        <div className="row">
-                            <div className="col-md-6">
-                                <table className="table table-striped">
-                                    <tr>
-                                        <th>Input</th>
-                                        <th>Student Name</th>
-                                        <th>Status</th>
-                                    </tr>
-                                    <tbody>
-                                        {rows}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-md-6">
-                                <ProgressBarBox state={this.props.state} percentComplete={percentComplete} errorOccurred={errorOccurred}/>
-                            </div>
-                        </div>
-                    </div>
-                );
-            }
+            addError = true;
         }
-    });
+        var addInputClasses = classNames({
+            'col-md-4': true,
+            'has-error': addError
+        });
+        return(
+            <div>
+                <div className="row">
+                    <div className={addInputClasses}>
+                        <textarea style={controlStyle} className="form-control" rows="5" cols="40" ref="addText"></textarea>
+                    </div>
+                </div>
+                <a onClick={this.click} style={buttonStyle} className="btn btn-lg btn-success">Add</a>
+            </div>
+        );
+    }
+});
+
+var RemoveBox = React.createClass({
+    click: function()
+    {
+        var removeText = this.refs.removeText.value;
+        this.props.click(removeText);
+    },
+    render: function()
+    {
+        var controlStyle = {marginTop: '25px'};
+        var buttonStyle = {marginTop: '15px'};
+        var removeError = false;
+        if(this.props.errorData.location == "Remove")
+        {
+            removeError = true;
+        }
+        var removeInputClasses = classNames({
+            'col-md-4': true,
+            'has-error': removeError
+        });
+        return(
+            <div style={controlStyle}>
+                <div className="row">
+                    <div className={removeInputClasses}>
+                        <textarea className="form-control" rows="5" cols="40" ref="removeText"></textarea>
+                    </div>
+                </div>
+                <a onClick={this.click} style={buttonStyle} className="btn btn-lg btn-success">Remove</a>
+            </div>
+        );
+    }
+});
+
+var ActionBox = React.createClass({
+    completeState: function()
+    {
+        this.props.complete();
+    },
+    render: function()
+    {
+        var controlStyle = {marginTop: '25px'};
+        if(this.props.inputData == undefined)
+        {
+            return (<div></div>);
+        }
+        if(this.props.state == 3 && this.props.inputData.length == this.props.outputData.length)
+        {
+            this.completeState();
+        }
+        var data = Array();
+        var i = 0;
+        var cmpCnt = 0;
+        var errorOccurred = false;
+
+        for(i; i < this.props.inputData.length; i++)
+        {
+            var datum = Array();
+            datum.input = this.props.inputData[i].input;
+            if(this.props.outputData[i] == undefined)
+            {
+                datum.status = undefined;
+                datum.name = undefined;
+            }
+            else
+            {
+                datum.status = this.props.outputData[i].status;
+                datum.name = this.props.outputData[i].name;
+                cmpCnt++;
+                if(!datum.status)
+                {
+                    errorOccurred = true;
+                }
+            }
+            data.push(datum);
+
+        }
+        var rows = data.map(function(node){
+
+            if(node.status == 0)
+            {
+                return(
+                    <tr key={node.input}>
+                        <td>{node.input}</td>
+                        <td><i className="fa fa-times text-danger"></i> Error retrieving student</td>
+                        <td><i className="fa fa-times text-danger"></i></td>
+                    </tr>
+                );
+            }
+            else if(node.status == 1)
+            {
+                return(<tr key={node.input}>
+                        <td>{node.input}</td>
+                        <td>{node.name}</td>
+                        <td><i className="fa fa-check text-success"></i></td>
+                    </tr>
+                );
+            }
+            else if(node.status == 2)
+            {
+                return(<tr key={node.input}>
+                        <td>{node.input}</td>
+                        <td>{node.name}</td>
+                        <td><i className="fa fa-times text-danger"></i></td>
+                    </tr>
+                );
+            }
+            else if(node.name == undefined && node.status == undefined)
+            {
+                return(<tr key={node.input}>
+                        <td>{node.input}</td>
+                        <td><i className="fa fa-spinner fa-pulse"></i></td>
+                        <td><i className="fa fa-spinner fa-pulse"></i></td>
+                    </tr>
+                );
+            }
+        });
+
+        var percentComplete = (cmpCnt / this.props.inputData.length) * 100;
+
+        return(
+            <div style={controlStyle}>
+                <div className="row">
+                    <div className="col-md-6">
+                        <table className="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Input</th>
+                                    <th>Student Name</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rows}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-6">
+                        <ProgressBarBox state={this.props.state} percentComplete={percentComplete} errorOccurred={errorOccurred}/>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+});
+
+var OptionBox = React.createClass({
+    remove: function()
+    {
+        this.props.remove(this.props.email);
+    },
+    render: function()
+    {
+        return(
+            <button onClick={this.listRemove} type="button" className="close">
+                <span aria-hidden="true">
+                    <i onClick={this.listRemove} className="fa fa-trash"></i>
+                </span>
+            </button>
+        );
+    }
+});
 
 var ProgressBarBox = React.createClass({
     render: function()
