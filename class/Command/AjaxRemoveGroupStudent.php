@@ -2,7 +2,7 @@
 
 namespace AppSync\Command;
 
-class AjaxRemoveStudent extends \AppSync\Command {
+class AjaxRemoveGroupStudent extends \AppSync\Command {
 
     public function getRequestVars(){
         return array('action'=>'AjaxRemoveStudent');
@@ -12,6 +12,7 @@ class AjaxRemoveStudent extends \AppSync\Command {
     {
         $input = $_REQUEST['inputData'];
         $portal = $_REQUEST['portalId'];
+        $groupId = $_REQUEST['groupId'];
 
         if(!is_numeric($input))
         {
@@ -36,7 +37,7 @@ class AjaxRemoveStudent extends \AppSync\Command {
             exit;
         }
 
-        $status = $this->removeAccount($student->{'emailAddress'}, $portal);
+        $status = $this->removeGroupAccount($student->{'emailAddress'}, $groupId);
 
         $name = $student->{'firstName'} . ' ' . $student->{'lastName'};
         if($status)
@@ -74,18 +75,19 @@ class AjaxRemoveStudent extends \AppSync\Command {
 
 
     /**
-    * Remove an account or multiple accounts from an organization. $ids can be one id or and array of ids.
+    * Place a user or users into a group. User can be a single user id or and array of ids
     *
-    *
+    * @param int $user_id (can be array of user id's), int $group_id (groups id)
+    * @return boolean (success or not)
     */
-    function removeAccount($user_id, $org_id){
+    function removeGroupAccount($user_id, $group_id){
         $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
         $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
         $id = $this->getIDFromUsername($user_id);
-
-        $url = $base_url."/orgs/$org_id/accounts/remove";
+        $import_url = '';
+        $import_url = $base_url."groups/$group_id/accounts/remove";
         $curl = curl_init();
-        curl_setopt_array($curl, array(CURLOPT_TIMEOUT => 900, CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $url, CURLOPT_POST => 1, CURLOPT_POSTFIELDS => "ids=$id&key=$key"));
+        curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $import_url, CURLOPT_POST => 1, CURLOPT_POSTFIELDS => "ids=$id&key=$key"));
         $result = curl_exec($curl);
         curl_close($curl);
         if($result){
@@ -93,6 +95,8 @@ class AjaxRemoveStudent extends \AppSync\Command {
             if(is_object($result) && $result->success == "true")
             return TRUE;
             else
+            return FALSE;
+        }else{
             return FALSE;
         }
     }

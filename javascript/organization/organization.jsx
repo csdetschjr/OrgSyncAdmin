@@ -1,6 +1,6 @@
 var AppSyncBox = React.createClass({
     getInitialState: function() {
-        return {umbrella: undefined, portal: null, portalMembers: [], errorData: {message: "", location: ""}};
+        return {umbrella: undefined, portal: null, portalMembers: [], groupList: [], errorData: {message: "", location: ""}};
     },
     componentDidMount: function() {
         this.updatePortals();
@@ -10,6 +10,10 @@ var AppSyncBox = React.createClass({
     },
     doSearch: function(datum) {
         this.setState({portal: datum});
+        this.getMembers(datum);
+        this.getGroups(datum);
+    },
+    getMembers: function(datum) {
         $.ajax({
             url: 'index.php?module=appsync&action=AjaxGetPortalMembers',
             dataType: 'json',
@@ -29,6 +33,25 @@ var AppSyncBox = React.createClass({
             success: function()
             {
                 this.setState({updated: true});
+            }.bind(this),
+            error: function(xhr, status, err)
+            {
+                //TODO create error handler
+            }.bind(this)
+        });
+    },
+    getGroups: function(datum)
+    {
+        var inputData = {portalId: datum.id};
+        $.ajax({
+            url: 'index.php?module=appsync&action=AjaxGetPortalGroups',
+            type: 'POST',
+            data: inputData,
+            success: function(data)
+            {
+                var outputData = Array();
+                outputData = JSON.parse(data);
+                this.setState({groupList: outputData});
             }.bind(this),
             error: function(xhr, status, err)
             {
@@ -90,7 +113,8 @@ var AppSyncBox = React.createClass({
                 </nav>
                 {errorBox}
                 <PortalBox portal={this.state.portal} clearError={this.clearError} errorHandler={this.handleError}
-                    errorData={this.state.errorData} portalMembers={this.state.portalMembers} listMembers={this.doSearch}/>
+                    errorData={this.state.errorData} portalMembers={this.state.portalMembers} listMembers={this.doSearch}
+                    groupList={this.state.groupList}/>
             </div>
         );
     }

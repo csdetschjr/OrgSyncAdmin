@@ -2,7 +2,7 @@
 
 namespace AppSync\Command;
 
-class AjaxAddStudent extends \AppSync\Command {
+class AjaxAddPortalStudent extends \AppSync\Command {
 
     public function getRequestVars(){
         return array('action'=>'AjaxAddStudent');
@@ -77,7 +77,6 @@ class AjaxAddStudent extends \AppSync\Command {
         $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
         $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
         $id = $this->getIDFromUsername($user_id);
-
         $import_url = '';
         $import_url = $base_url."orgs/$org_id/accounts/add";
         $curl = curl_init();
