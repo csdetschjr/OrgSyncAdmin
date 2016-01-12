@@ -1,18 +1,24 @@
 var AppSyncBox = React.createClass({
+    // Sets up an initial state for the class, with default values.
     getInitialState: function() {
         return {umbrella: undefined, portal: null, portalMembers: [], groupList: [], errorData: {message: "", location: ""}};
     },
+    // When the component mounts update the available portals.
     componentDidMount: function() {
         this.updatePortals();
     },
+    // Set the value of the umbrella to the value picked on the dropdown
     setUmbrella: function(newUmbrella) {
         this.setState({umbrella: newUmbrella});
     },
+    // Calls the functions responsible for picking the portal, setting up the members of the portal,
+    // and the groups for the portal.
     doSearch: function(datum) {
         this.setState({portal: datum});
         this.getMembers(datum);
         this.getGroups(datum);
     },
+    // Retrieve the members for the given portal from the server via ajax.
     getMembers: function(datum) {
         $.ajax({
             url: 'index.php?module=appsync&action=AjaxGetPortalMembers',
@@ -26,6 +32,7 @@ var AppSyncBox = React.createClass({
             }.bind(this)
         });
     },
+    // Sends a call to the server to update the portals from the orgsync api.
     updatePortals: function() {
         $.ajax({
             url: 'index.php?module=appsync&action=AjaxUpdateOrgData',
@@ -40,6 +47,7 @@ var AppSyncBox = React.createClass({
             }.bind(this)
         });
     },
+    // Retrieves the groups for the given portal
     getGroups: function(datum)
     {
         var inputData = {portalId: datum.id};
@@ -59,14 +67,17 @@ var AppSyncBox = React.createClass({
             }.bind(this)
         });
     },
+    // Sets the errorData, so that the ErrorBox can report errors
     handleError: function(data)
     {
         this.setState({errorData: data});
     },
+    // Sets the errorData to blank values, in order to clear the ErrorBox
     clearError: function()
     {
         this.setState({errorData: {message: "", location: ""}});
     },
+    // Render function
     render: function()
     {
         if(this.state.umbrella == undefined)
@@ -121,19 +132,23 @@ var AppSyncBox = React.createClass({
 });
 
 var UmbrellaPickBox = React.createClass({
+    // Sets up an initial state for the class, with default values.
     getInitialState: function()
     {
         return({umbrellas: []});
     },
+    // When the component mounts, get all the umbrellas
     componentWillMount: function()
     {
         this.getUmbrellas();
     },
+    // Retrieves the value of the dropdown and passes it to the parent component.
     change: function()
     {
         var uChoice = this.refs.umbrellaChoice.value;
         this.props.change(uChoice);
     },
+    // Retrieves the umbrellas from the server via an ajax call.
     getUmbrellas: function()
     {
         $.ajax({
@@ -151,6 +166,7 @@ var UmbrellaPickBox = React.createClass({
             }.bind(this)
         });
     },
+    // Render function
     render: function()
     {
         var options = Array({umbrella_id: -1, umbrella_name: "Pick an umbrella..."});
@@ -177,6 +193,7 @@ var UmbrellaPickBox = React.createClass({
 });
 
 var PortalPickBox = React.createClass({
+    // On successful mount set up the autofill using Bloodhound.
     componentDidMount: function() {
         var searchSuggestions = new Bloodhound({
             datumTokenizer: function(datum){
@@ -232,6 +249,7 @@ var PortalPickBox = React.createClass({
 
         });
     },
+    // If the component has updated recreate the autofill with Bloodhound.
     componentDidUpdate: function() {
         var element = ReactDOM.findDOMNode(this);
         $(element).typeahead('destroy');
@@ -289,10 +307,12 @@ var PortalPickBox = React.createClass({
 
         });
     },
+    // If the component is going to unmount destroy the typeahead
     componentWillUnmount: function() {
         var element = ReactDOM.findDOMNode(this);
         $(element).typeahead('destroy');
     },
+    // Render function
     render: function()
     {
         return (
@@ -302,6 +322,7 @@ var PortalPickBox = React.createClass({
 });
 
 var ErrorBox = React.createClass({
+    // The Render Function
     render: function()
     {
         return (

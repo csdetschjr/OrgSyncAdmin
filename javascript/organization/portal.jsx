@@ -2,23 +2,24 @@ var PortalBox = React.createClass({
     // Sets up an initial state for the class, with default values.
     getInitialState: function()
     {
-        return {toggleState: "LIST", inputListData: [], outputListData: [], group: -1, groupMembers: []};
+        return {toggleState: "LIST", inputListData: [], outputListData: [], groupId: -1, groupName: "All Groups", groupMembers: []};
     },
-    //
-    //
+    // Sets the new state and calls certain functions needed to update the rest of the portal.
     changeToggleState: function(newState)
     {
         this.setState({toggleState: newState, inputListData: [], outputListData: []});
         this.props.clearError();
-        console.log(this.state.group)
+        this.getGroupMembers(this.state.groupId);
     },
-    //
+    // Sets the state to the completed state, and refreshs the list of portal members.
     completeState: function()
     {
         this.setState({toggleState: "COMPLETE"});
         this.props.listMembers(this.props.portal);
     },
-    //
+    // Parses the text provided by the ControlBox into an array of strings,
+    // and then passes the array to the createData function as well as a flag
+    // that tells it that the users are to be added to the group/portal.
     addSubmit: function(addText)
     {
         var parsedTextData = this.parseData(addText);
@@ -29,7 +30,9 @@ var PortalBox = React.createClass({
         }
         this.createData(parsedTextData, "Add");
     },
-    //
+    // Parses the text provided by the ControlBox into an array of strings,
+    // and then passes the array to the createData function as well as a flag
+    // that tells it that the users are to be added to the group/portal.
     removeSubmit: function(removeText)
     {
         var parsedTextData = this.parseData(removeText);
@@ -39,19 +42,23 @@ var PortalBox = React.createClass({
         }
         this.createData(parsedTextData, "Remove");
     },
-    //
+    // Parses the text splitting on commas, spaces, and newline characters.
     parseData: function(text)
     {
         var split = text.split(/[, \n]/);
         return split;
     },
-    //
+    // Parses the text element splitting on the @ symbol and throwing away everything after.
     stripEmail: function(text)
     {
         var split = text.split('@');
         return split[0];
     },
-    //
+    // Takes the parsed data and creates json objects for the PROCESSING state to
+    // display as a list of rows.  Then it sets the inputListData as an array of these
+    // objects, sets the state to PROCESSING and initiates the process by calling proccesAdd
+    // if the data is to be added or processRemove if it is to be removed.  If there was an error
+    // previously the clearError function is called first.  An error is set if there was no data.
     createData: function(parsedTextData, caller)
     {
         var newData = Array();
@@ -84,7 +91,9 @@ var PortalBox = React.createClass({
             this.props.errorHandler({message: "Empty text field", location: caller});
         }
     },
-    //
+    // Confirms with the user that they actually want to remove all students from the group/portal.
+    // If they say yes then it iterates through the portalMembers prop adding them to an arra and passes
+    // them to the createData function.
     clear: function()
     {
         if(confirm("This will remove all students from this organization...\n\nAre you sure?"))
@@ -98,33 +107,36 @@ var PortalBox = React.createClass({
             this.createData(membersToRemove, "Remove");
         }
     },
-    //
+    // Takes an email address from the ListBox and searches for the student with that
+    // email and adds them to an array and passes it to the createData function to remove.
     singleRemove: function(email)
     {
         var name;
-        var i;
-        for(i; i < this.props.portalMembers.length; i++)
+        var i = 0;
+        var members = this.props.portalMembers;
+
+        for(i; i < members.length; i++)
         {
-            if(this.props.portalMembers[i].email == email)
+            if(members[i].email == email)
             {
-                name = this.props.portalMembers[i].first_name + " " + this.props.portalMembers[i].last_name;
+                name = members[i].first_name + " " + members[i].last_name;
             }
         }
-        if(confirm("Remove "+ name + " from this organization...\n\nAre you sure?"))
+        if(confirm("Remove " + name + " from this organization...\n\nAre you sure?"))
         {
             var inputList = Array();
-            inputList[0] = {input: this.stripEmail(email), name: '-', status: 0};
-            this.setState({inputListData: inputList});
-            this.processRemove(inputList);
+            inputList[0] = email;
+            this.createData(inputList, "Remove")
         }
     },
-    //
+    // Iterates through the data provided and calls the appropriate function to make
+    // the ajax request to add the student to the group/portal.
     processAdd: function(addData)
     {
         var i = 0;
         for(i; i < addData.length; i++)
         {
-            if(this.state.group == -1)
+            if(this.state.groupId == -1)
             {
                 this.addPortalStudent(addData[i].input, i);
             }
@@ -134,13 +146,14 @@ var PortalBox = React.createClass({
             }
         }
     },
-    //
+    // Iterates through the data provided and calls the appropriate function to make
+    // the ajax request to remove the student from the group/portal.
     processRemove: function(removeData)
     {
         var i = 0;
         for(i; i < removeData.length; i++)
         {
-            if(this.state.group == -1)
+            if(this.state.groupId == -1)
             {
                 this.removePortalStudent(removeData[i].input, i);
             }
@@ -150,16 +163,34 @@ var PortalBox = React.createClass({
             }
         }
     },
-    //
+    // Changes the groupId to that of the value passed from the dropdown. Also calls the function
+    // to refresh the groupMembers array and updates the groupName for the new group.
     changeGroup: function(newGroup)
     {
-        this.setState({group: newGroup});
+        this.setState({groupId: newGroup});
         if(newGroup != -1)
         {
             this.getGroupMembers(newGroup);
         }
+
+        var list = this.props.groupList;
+        var i = 0;
+        if(groupId != -1)
+        {
+            for(i; i < list.length; i++)
+            {
+                if(list[i].id == groupId)
+                {
+                    this.setState({groupName: list[i].name});
+                }
+            }
+        }
+        else
+        {
+            this.setState({groupName: "All Groups"})
+        }
     },
-    //
+    // Retrieve the members for the given group from the server via ajax.
     getGroupMembers: function(newGroup)
     {
         var inputData = {groupId: newGroup};
@@ -175,10 +206,9 @@ var PortalBox = React.createClass({
             }.bind(this)
         });
     },
-    //
+    // Add the new members to the portal via ajax.
     addPortalStudent: function(addInput, index)
     {
-        console.log("inPort")
         var inputData = {inputData: addInput, portalId: this.props.portal.id};
         $.ajax({
             url: 'index.php?module=appsync&action=AjaxAddPortalStudent',
@@ -197,11 +227,10 @@ var PortalBox = React.createClass({
             }.bind(this)
         });
     },
-    //
+    // Add the new members to the group via ajax.
     addGroupStudent: function(addInput, index)
     {
-        console.log("inGroup")
-        var inputData = {inputData: addInput, portalId: this.props.portal.id, groupId: this.state.group};
+        var inputData = {inputData: addInput, portalId: this.props.portal.id, groupId: this.state.groupId};
         $.ajax({
             url: 'index.php?module=appsync&action=AjaxAddGroupStudent',
             type: 'POST',
@@ -218,7 +247,7 @@ var PortalBox = React.createClass({
             }.bind(this)
         });
     },
-    //
+    // Remove the given members from the portal via ajax
     removePortalStudent: function(removeInput, index)
     {
         var inputData = {inputData: removeInput, portalId: this.props.portal.id};
@@ -238,10 +267,10 @@ var PortalBox = React.createClass({
             }.bind(this)
         });
     },
-    //
+    // Remove the given members from the group via ajax
     removeGroupStudent: function(removeInput, index)
     {
-        var inputData = {inputData: removeInput, portalId: this.props.portal.id, groupId: this.state.group};
+        var inputData = {inputData: removeInput, portalId: this.props.portal.id, groupId: this.state.groupId};
         $.ajax({
             url: 'index.php?module=appsync&action=AjaxRemoveGroupStudent',
             type: 'POST',
@@ -272,20 +301,19 @@ var PortalBox = React.createClass({
                 <div>
                     <div className="row">
                         <div className="col-md-10">
-                            <h2 className="marginTop: 12px">{this.props.portal.name}</h2>
+                            <h2>{this.props.portal.name} <small>{this.state.groupName}</small></h2>
                             <div className="col-md-4">
                                 <GroupPickBox groups={this.props.groupList} change={this.changeGroup}
-                                    state={this.state.toggleState}/>
+                                    state={this.state.toggleState} groupId={this.state.group}/>
                             </div>
                         </div>
                     </div>
                     <div className="col-md-12">
-                        <ToggleBox toggle={this.changeToggleState} state={this.state.toggleState} clear={this.clear}/>
+                        <ToggleBox toggle={this.changeToggleState} state={this.state.toggleState} clear={this.clear} groupId={this.state.groupId}/>
                         <ControlBox add={this.addSubmit} remove={this.removeSubmit} complete={this.completeState} state={this.state.toggleState}
                             inputData={this.state.inputListData} outputData={this.state.outputListData} portalMembers={this.props.portalMembers}
                             errorData={this.props.errorData} singleRemove={this.singleRemove} groupMembers={this.state.groupMembers}
-                            groupId={this.state.group}/>
-
+                            groupId={this.state.groupId}/>
                     </div>
                 </div>
             );
@@ -294,11 +322,13 @@ var PortalBox = React.createClass({
 });
 
 var GroupPickBox = React.createClass({
+    // On change of the select component retrieve the value and pass it to the parent component
     change: function()
     {
         var gChoice = this.refs.groupChoice.value;
         this.props.change(gChoice);
     },
+    // Render Function
     render: function()
     {
         if(this.props.state == "PROCESSING")
@@ -308,6 +338,7 @@ var GroupPickBox = React.createClass({
         var groupsStyle = {marginTop: '20px'};
         var options = Array({id: -1, name: "All Groups"});
         var data = this.props.groups;
+        var groupId = this.props.groupId;
 
         for(i = 0; i < data.length; i++)
         {
@@ -316,12 +347,12 @@ var GroupPickBox = React.createClass({
 
         var selectOptions = options.map(function(node)
         {
-            return(<option key={node.id} value={node.id}>{node.name}</option>)
+                return(<option key={node.id} value={node.id}>{node.name}</option>);
         });
 
         return(
             <div>
-                <select onChange={this.change} style={groupsStyle} className="form-control" ref="groupChoice">
+                <select onChange={this.change} defaultValue={this.props.groupId} style={groupsStyle} className="form-control" ref="groupChoice">
                     {selectOptions}
                 </select>
             </div>
@@ -330,22 +361,27 @@ var GroupPickBox = React.createClass({
 });
 
 var ToggleBox = React.createClass({
+    // Calls the parent class' toggle function with the LIST flag
     list: function()
     {
         this.props.toggle("LIST");
     },
+    // Calls the parent class' toggle function with the ADD flag
     add: function()
     {
         this.props.toggle("ADD");
     },
+    // Calls the parent class' toggle function with the REMOVE flag
     remove: function()
     {
         this.props.toggle("REMOVE");
     },
+    // Calls the parent class' clear method to attempt to purge all members
     clear: function()
     {
         this.props.clear();
     },
+    // Render Function
     render: function()
     {
         if(this.props.state == "PROCESSING")
@@ -388,7 +424,7 @@ var ToggleBox = React.createClass({
 
             var toggleStyle = {marginTop: '25px'};
             return(
-                <div style={toggleStyle}>
+                <div className="row" style={toggleStyle}>
                     <div className="col-md-6">
                         <div className="btn-group">
                             <label onClick={this.list} className={listClasses}>
@@ -402,8 +438,8 @@ var ToggleBox = React.createClass({
                             </label>
                         </div>
                     </div>
-                    <div className="col-md-3 col-md-offset-2">
-                        <ButtonBox clear={this.clear} state={this.props.state}/>
+                    <div className="col-md-3 col-md-offset-3">
+                        <ButtonBox clear={this.clear} state={this.props.state} groupId={this.props.groupId}/>
                     </div>
                 </div>
             );
@@ -411,11 +447,14 @@ var ToggleBox = React.createClass({
     }
 });
 
+
 var ButtonBox = React.createClass({
+    // On click function for calling the parent class' clear method.
     clear: function()
     {
         this.props.clear();
     },
+    // Render method
     render: function()
     {
         if(this.props.state == "PROCESSING")
@@ -423,367 +462,20 @@ var ButtonBox = React.createClass({
             return (<div></div>);
         }
         else {
-            return(
-                <div>
-                    <a onClick={this.clear} className="btn btn-md btn-danger">Purge All Members</a>
-                </div>
-            );
-        }
-    }
-});
-
-var ControlBox = React.createClass({
-    completeState: function()
-    {
-        this.props.complete();
-    },
-    click: function(text)
-    {
-        if(this.props.state == "ADD")
-        {
-
-            this.props.add(text);
-        }
-        else if(this.props.state == "REMOVE")
-        {
-
-            this.props.remove(text);
-        }
-    },
-    singleRemove: function(email)
-    {
-        this.props.singleRemove(email);
-    },
-    render: function()
-    {
-        if(this.props.state == "LIST")
-        {
-            return(
-                <div>
-                    <ListBox portalMembers={this.props.portalMembers} groupMembers={this.props.groupMembers}
-                        singleRemove={this.singleRemove} groupId={this.props.groupId}/>
-                </div>
-            );
-        }
-        else if(this.props.state == "ADD")
-        {
-            return(
-                <div>
-                    <AddBox click={this.click} errorData={this.props.errorData} />
-                </div>
-            );
-        }
-        else if(this.props.state == "REMOVE")
-        {
-            return(
-                <div>
-                    <RemoveBox click={this.click} errorData={this.props.errorData} />
-                </div>
-            );
-        }
-        else if(this.props.state == "PROCESSING" || this.props.state == "COMPLETE")
-        {
-            return(
-                <div>
-                    <ActionBox complete={this.completeState} inputData={this.props.inputData}
-                        outputData={this.props.outputData} state={this.props.state} />
-                </div>
-            );
-        }
-        else
-        {
-                return(
-                    <div></div>
-                );
-        }
-    }
-});
-
-var ListBox = React.createClass({
-    remove: function(email)
-    {
-        this.props.singleRemove(email);
-    },
-    render: function()
-    {
-        var controlStyle = {marginTop: '25px'};
-        var members = Array();
-        if(this.props.groupId == -1)
-        {
-            members = this.props.portalMembers;
-        }
-        else
-        {
-            members = this.props.groupMembers;
-        }
-        console.log(members)
-        if(members.length == 0)
-        {
-            return (<p>There are no members at present, to add some members click on the Add Members tab.</p>);
-        }
-        var memberRows = members.map(function(node){
-            return (
-                <tr key={node.email}>
-                    <td>
-                        {node.first_name} {node.last_name}
-                    </td>
-                    <td>
-                        {node.email}
-                    </td>
-                    <td>
-                        <OptionBox listRemove={this.remove} email={node.email} />
-                    </td>
-                </tr>);
-            });
-            return(
-                <div >
-                    <div className="col-md-6">
-                        <table style={controlStyle} className="table table-hover table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Student Name</th>
-                                    <th>Email</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {memberRows}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            );
-    }
-});
-
-var AddBox = React.createClass({
-    click: function()
-    {
-        var addText = this.refs.addText.value;
-        this.props.click(addText);
-    },
-    render: function()
-    {
-        var controlStyle = {marginTop: '25px'};
-        var buttonStyle = {marginTop: '15px'};
-        var addError = false;
-        if(this.props.errorData.location == "Add")
-        {
-            addError = true;
-        }
-        var addInputClasses = classNames({
-            'col-md-4': true,
-            'has-error': addError
-        });
-        return(
-            <div>
-                <div className="row">
-                    <div className={addInputClasses}>
-                        <textarea style={controlStyle} className="form-control" rows="5" cols="40" ref="addText"></textarea>
-                    </div>
-                </div>
-                <a onClick={this.click} style={buttonStyle} className="btn btn-lg btn-success">Add</a>
-            </div>
-        );
-    }
-});
-
-var RemoveBox = React.createClass({
-    click: function()
-    {
-        var removeText = this.refs.removeText.value;
-        this.props.click(removeText);
-    },
-    render: function()
-    {
-        var controlStyle = {marginTop: '25px'};
-        var buttonStyle = {marginTop: '15px'};
-        var removeError = false;
-        if(this.props.errorData.location == "Remove")
-        {
-            removeError = true;
-        }
-        var removeInputClasses = classNames({
-            'col-md-4': true,
-            'has-error': removeError
-        });
-        return(
-            <div style={controlStyle}>
-                <div className="row">
-                    <div className={removeInputClasses}>
-                        <textarea className="form-control" rows="5" cols="40" ref="removeText"></textarea>
-                    </div>
-                </div>
-                <a onClick={this.click} style={buttonStyle} className="btn btn-lg btn-success">Remove</a>
-            </div>
-        );
-    }
-});
-
-var ActionBox = React.createClass({
-    completeState: function()
-    {
-        this.props.complete();
-    },
-    render: function()
-    {
-        var controlStyle = {marginTop: '25px'};
-        if(this.props.inputData == undefined)
-        {
-            return (<div></div>);
-        }
-        if(this.props.state == "PROCESSING" && this.props.inputData.length == this.props.outputData.length)
-        {
-            this.completeState();
-        }
-        var data = Array();
-        var i = 0;
-        var cmpCnt = 0;
-        var errorOccurred = false;
-
-        for(i; i < this.props.inputData.length; i++)
-        {
-            var datum = Array();
-            datum.input = this.props.inputData[i].input;
-            if(this.props.outputData[i] == undefined)
+            var message;
+            if(this.props.groupId == -1)
             {
-                datum.status = undefined;
-                datum.name = undefined;
+                message = "Purge All Members";
             }
             else
             {
-                datum.status = this.props.outputData[i].status;
-                datum.name = this.props.outputData[i].name;
-                cmpCnt++;
-                if(!datum.status)
-                {
-                    errorOccurred = true;
-                }
+                message = "Purge All Members From Group";
             }
-            data.push(datum);
-
-        }
-        var rows = data.map(function(node){
-
-            if(node.status == 0)
-            {
-                return(
-                    <tr key={node.input}>
-                        <td>{node.input}</td>
-                        <td><i className="fa fa-times text-danger"></i> Error retrieving student</td>
-                        <td><i className="fa fa-times text-danger"></i></td>
-                    </tr>
-                );
-            }
-            else if(node.status == 1)
-            {
-                return(<tr key={node.input}>
-                        <td>{node.input}</td>
-                        <td>{node.name}</td>
-                        <td><i className="fa fa-check text-success"></i></td>
-                    </tr>
-                );
-            }
-            else if(node.status == 2)
-            {
-                return(<tr key={node.input}>
-                        <td>{node.input}</td>
-                        <td>{node.name}</td>
-                        <td><i className="fa fa-times text-danger"></i></td>
-                    </tr>
-                );
-            }
-            else if(node.name == undefined && node.status == undefined)
-            {
-                return(<tr key={node.input}>
-                        <td>{node.input}</td>
-                        <td><i className="fa fa-spinner fa-pulse"></i></td>
-                        <td><i className="fa fa-spinner fa-pulse"></i></td>
-                    </tr>
-                );
-            }
-        });
-
-        var percentComplete = (cmpCnt / this.props.inputData.length) * 100;
-
-        return(
-            <div style={controlStyle}>
-                <div className="row">
-                    <div className="col-md-6">
-                        <table className="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Input</th>
-                                    <th>Student Name</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {rows}
-                            </tbody>
-                        </table>
-                    </div>
+            return(
+                <div>
+                    <a onClick={this.clear} className="btn btn-md btn-danger">{message}</a>
                 </div>
-                <div className="row">
-                    <div className="col-md-6">
-                        <ProgressBarBox state={this.props.state} percentComplete={percentComplete} errorOccurred={errorOccurred}/>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-});
-
-var OptionBox = React.createClass({
-    remove: function()
-    {
-        this.props.remove(this.props.email);
-    },
-    render: function()
-    {
-        return(
-            <button onClick={this.listRemove} type="button" className="close">
-                <span aria-hidden="true">
-                    <i onClick={this.listRemove} className="fa fa-trash"></i>
-                </span>
-            </button>
-        );
-    }
-});
-
-var ProgressBarBox = React.createClass({
-    render: function()
-    {
-        var percentage = this.props.percentComplete + '%'
-        var progressBarStyle = {width: percentage};
-        var complete = false;
-        var success = true;
-        var danger = false;
-        var active = true;
-        if(this.props.percentComplete == 100)
-        {
-            complete = true;
-            active = false;
+            );
         }
-        if(this.props.errorOccurred)
-        {
-            success = false;
-            danger = true;
-        }
-        var progressBarClasses = classNames({
-            'progress-bar': true,
-            'progress-bar-striped': !complete,
-            'progress-bar-success': success,
-            'progress-bar-danger': danger,
-            'active': active
-        });
-
-        return(
-            <div className="progress">
-                <div className={progressBarClasses} role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style={progressBarStyle}>
-                </div>
-            </div>
-        )
-
     }
 });
