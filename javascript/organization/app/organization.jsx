@@ -1,5 +1,6 @@
-import React from 'react';
+import React from 'react-dom/node_modules/react';
 import ReactDOM from 'react-dom';
+import Bloodhound from 'bloodhound';
 
 var AppSyncBox = React.createClass({
     // Sets up an initial state for the class, with default values.
