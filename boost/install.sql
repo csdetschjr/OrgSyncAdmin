@@ -14,6 +14,14 @@ INSERT INTO appsync_umbrella (id, name, orgsync_id) VALUES (nextval('appsync_umb
 INSERT INTO appsync_umbrella (id, name, orgsync_id) VALUES (nextval('appsync_umbrella_seq'), 'Student Development', 101226);
 INSERT INTO appsync_umbrella (id, name, orgsync_id) VALUES (nextval('appsync_umbrella_seq'), 'University Housing', 107843);
 
+CREATE TABLE appsync_permission (
+    id INT NOT NULL,
+    username VARCHAR NOT NULL UNIQUE,
+    umbrella_id INT NOT NULL
+);
+
+CREATE SEQUENCE appsync_permission_seq;
+
 CREATE TABLE appsync_portal (
     orgsync_id INT NOT NULL UNIQUE,
     name VARCHAR NOT NULL UNIQUE,

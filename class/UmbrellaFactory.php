@@ -22,34 +22,35 @@ class UmbrellaFactory {
 
     public static function save($umbrella)
     {
-    	$db = PdoFactory::getPdoInstance();
+        $db = PdoFactory::getPdoInstance();
 
-      $id = $umbrella->getId();
+        $id = $umbrella->getId();
 
-      if (isset($id)) {
-        $query = "UPDATE appsync_umbrella SET (name, orgsync_id) = (:name, :orgsyncId) WHERE id = :id";
+        if (isset($id)) {
+            $query = "UPDATE appsync_umbrella SET (name, orgsync_id) = (:name, :orgsyncId) WHERE id = :id";
 
-        $params = array(
-                  'name' => $contract->getName(),
-                  'orgsyncId' => $contract->getOrgSyncId()
-      	);
+            $params = array(
+                'name' => $contract->getName(),
+                'orgsyncId' => $contract->getOrgSyncId(),
+                'id' => $id
+            );
 
-      }else{
-        // Insert
-        $query = "INSERT INTO appsync_umbrella (id, name, orgsync_id) VALUES (nextval('appsync_umbrella_seq'), :name, :orgsyncId)";
+        }else{
+            // Insert
+            $query = "INSERT INTO appsync_umbrella (id, name, orgsync_id) VALUES (nextval('appsync_umbrella_seq'), :name, :orgsyncId)";
 
-        $params = array(
-                  'name' => $contract->getName(),
-                  'orgsyncId' => $contract->getOrgSyncId()
-        );
-      }
+            $params = array(
+                'name' => $contract->getName(),
+                'orgsyncId' => $contract->getOrgSyncId()
+            );
+        }
 
-      $stmt = $db->prepare($query);
-      $stmt->execute($params);
+        $stmt = $db->prepare($query);
+        $stmt->execute($params);
 
-      // Update ID for a new object
-      if (!isset($id)) {
-        $umbrella->setId($db->lastInsertId('appsync_umbrella_seq'));
-      }
+        // Update ID for a new object
+        if (!isset($id)) {
+            $umbrella->setId($db->lastInsertId('appsync_umbrella_seq'));
+        }
     }
 }

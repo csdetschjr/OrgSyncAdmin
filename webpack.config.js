@@ -5,15 +5,21 @@ module.exports = {
     entry: [
         // Set up an ES6-ish environment
         'babel-polyfill',
-
         // Add your application's scripts below
-        path.resolve(__dirname, 'javascript/organization/app/organization.jsx')
+        path.resolve(__dirname, 'javascript/organization/app/main.js')
     ],
 
     output: {
         path: path.resolve(__dirname, 'javascript/organization/build'),
-        filename: 'bundle.js'
+        filename: 'bundle.min.js'
     },
+
+
+    "scripts": {
+        "build": "webpack",
+        "dev": "webpack-dev-server --devtool eval --progress --colors --hot --content-base build"
+    },
+
 
     module: {
         loaders: [
