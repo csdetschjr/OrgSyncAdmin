@@ -2,6 +2,14 @@
 
 namespace AppSync;
 
+/**
+ * Object class for the Portal
+ *
+ * @author Chris Detsch
+ * @package appsync
+ *
+ */
+
 class Portal {
     protected $orgsync_id;
     protected $name;

@@ -2,6 +2,15 @@
 
 namespace AppSync\Command;
 
+/**
+ * Controller class for handling a request to add a student to a particular
+ * portal in OrgSync.
+ *
+ * @author Chris Detsch
+ * @package appsync
+ *
+ */
+
 class AjaxAddPortalStudent extends \AppSync\Command {
 
     public function getRequestVars(){
@@ -13,6 +22,18 @@ class AjaxAddPortalStudent extends \AppSync\Command {
 
         $input = $_REQUEST['inputData'];
         $portal = $_REQUEST['portalId'];
+        $username = \Current_User::getUsername();
+
+        $portalObjs = \AppSync\PortalFactory::getPortalById($portal);
+        $umbrellaId = $portalObjs[0]->getUmbrellaId();
+
+        $permissions = \AppSync\UmbrellaAdminFactory::getUmbrellaAdmin($username, $umbrellaId);
+
+        if(sizeof($permissions) == 0)
+        {
+            echo json_encode(array('status' => 0, 'message' => 'You do not have permission to add students to this group.'));
+            exit;
+        }
 
         if(!is_numeric($input))
         {
@@ -20,7 +41,7 @@ class AjaxAddPortalStudent extends \AppSync\Command {
             $banner = $this->getBannerIDFromEmail($input);
             if($banner === false)
             {
-                echo json_encode(array('status' => 'error', 'message' => 'Email/Username was invalid'));
+                echo json_encode(array('status' => 0, 'message' => 'Email/Username was invalid'));
                 exit;
             }
         }

@@ -2,6 +2,14 @@
 
 namespace AppSync\Command;
 
+/**
+ * Controller class for handling a request to update the portals in the database.
+ *
+ * @author Chris Detsch
+ * @package appsync
+ *
+ */
+
 class AjaxUpdateOrgData extends \AppSync\Command {
 
       public function getRequestVars(){
@@ -11,14 +19,17 @@ class AjaxUpdateOrgData extends \AppSync\Command {
       public function execute()
       {
 
-          //$orgs = $this->getAllOrganizations();
-
+        //   $orgs = $this->getAllOrganizations();
+          //
         //   foreach ($orgs as $org) {
         //       $orgId = $org->id;
         //       $name = $org->long_name;
         //       $umbrellaId = $org->umbrella_id;
-        //       $portal = new \AppSync\Portal($orgId, $name, $umbrellaId);
-        //       \AppSync\PortalFactory::save($portal);
+        //       if($name != null && $umbrellaId != null && $orgId != null)
+        //       {
+        //           $portal = new \AppSync\Portal($orgId, $name, $umbrellaId);
+        //           \AppSync\PortalFactory::save($portal);
+        //       }
         //   }
 
       }

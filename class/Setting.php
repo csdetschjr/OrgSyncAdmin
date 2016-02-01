@@ -2,6 +2,14 @@
 
 namespace AppSync;
 
+/**
+ * Object class for the Setting objects.
+ *
+ * @author Chris Detsch
+ * @package appsync
+ *
+ */
+
 class Setting {
     protected $setting;
     protected $value;

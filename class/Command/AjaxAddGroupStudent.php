@@ -1,7 +1,14 @@
 <?php
 
 namespace AppSync\Command;
-
+/**
+ * Controller class for handling a request to add a student to a particular
+ * group in OrgSync.
+ *
+ * @author Chris Detsch
+ * @package appsync
+ *
+ */
 class AjaxAddGroupStudent extends \AppSync\Command {
 
     public function getRequestVars(){
@@ -13,6 +20,18 @@ class AjaxAddGroupStudent extends \AppSync\Command {
         $input = $_REQUEST['inputData'];
         $portal = $_REQUEST['portalId'];
         $groupId = $_REQUEST['groupId'];
+        $username = \Current_User::getUsername();
+
+        $portalObjs = \AppSync\PortalFactory::getPortalById($portal);
+        $umbrellaId = $portalObjs[0]->getUmbrellaId();
+
+        $permissions = \AppSync\UmbrellaAdminFactory::getUmbrellaAdmin($username, $umbrellaId);
+
+        if(sizeof($permissions) == 0)
+        {
+            echo json_encode(array('status' => 0, 'message' => 'You do not have permission to add students to this group.'));
+            exit;
+        }
 
         if(!is_numeric($input))
         {
@@ -20,7 +39,7 @@ class AjaxAddGroupStudent extends \AppSync\Command {
             $banner = $this->getBannerIDFromEmail($input);
             if($banner === false)
             {
-                echo json_encode(array('status' => 'error', 'message' => 'Email/Username was invalid'));
+                echo json_encode(array('status' => 0, 'message' => 'Email/Username was invalid'));
                 exit;
             }
         }
@@ -89,13 +108,20 @@ class AjaxAddGroupStudent extends \AppSync\Command {
         curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $import_url, CURLOPT_POST => 1, CURLOPT_POSTFIELDS => "ids=$id&key=$key"));
         $result = curl_exec($curl);
         curl_close($curl);
-        if($result){
+        if($result)
+        {
             $result = json_decode($result);
             if(is_object($result) && $result->success == "true")
-            return TRUE;
+            {
+                return TRUE;
+            }
             else
-            return FALSE;
-        }else{
+            {
+                return FALSE;
+            }
+        }
+        else
+        {
             return FALSE;
         }
     }
@@ -110,7 +136,9 @@ class AjaxAddGroupStudent extends \AppSync\Command {
         if($result){
             $result = json_decode($result);
             if(!empty($result->id))
-            return $result->id;
+            {
+                return $result->id;
+            }
         }
         return false;
     }

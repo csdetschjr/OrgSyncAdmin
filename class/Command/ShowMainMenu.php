@@ -2,6 +2,14 @@
 
 namespace AppSync\Command;
 
+/**
+ * Controller class for setting up the Top level UI to be displayed.
+ *
+ * @author Chris Detsch
+ * @package appsync
+ *
+ */
+
 class ShowMainMenu extends \AppSync\Command {
 
 

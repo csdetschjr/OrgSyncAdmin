@@ -18,6 +18,21 @@ class AjaxGetPortalGroups {
 
     public function execute()
     {
+
+        $portal = $_REQUEST['portalId'];
+        $username = \Current_User::getUsername();
+
+        $portalObjs = \AppSync\PortalFactory::getPortalById($portal);
+        $umbrellaId = $portalObjs[0]->getUmbrellaId();
+
+        $permissions = \AppSync\UmbrellaAdminFactory::getUmbrellaAdmin($username, $umbrellaId);
+
+        if(sizeof($permissions) == 0)
+        {
+            echo '<div style="display: none;">User does not have permission to access this data.</div>';
+            exit;
+        }
+
         try
         {
             $portalGroups = $this->getOrgGroups($_REQUEST['portalId']);

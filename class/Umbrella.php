@@ -2,6 +2,14 @@
 
 namespace AppSync;
 
+/**
+ * Object class for the Umbrella
+ *
+ * @author Chris Detsch
+ * @package appsync
+ *
+ */
+
 class Umbrella {
 
     protected $id;

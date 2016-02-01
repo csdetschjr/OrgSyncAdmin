@@ -1,6 +1,8 @@
 import React from 'react-dom/node_modules/react';
 import ReactDOM from 'react-dom';
 import PortalBox from './portal.jsx';
+import PermissionsBox from './permissions.jsx';
+import UmbrellaPickBox from './umbrellaPick.jsx';
 
 export default class AppBox extends React.Component {
     render() {
@@ -10,24 +12,44 @@ export default class AppBox extends React.Component {
 
 var AppSyncBox = React.createClass({
     // Sets up an initial state for the class, with default values.
-    getInitialState: function() {
-        return {umbrella: undefined, portal: null, portalMembers: [], groupList: [], errorData: {message: "", location: ""}, userPermissions: null};
+    getInitialState: function()
+    {
+        return {umbrella: undefined, portal: null, portalMembers: [], groupList: [],
+            errorData: {message: "", location: ""}, userPermissions: null, view: "BLANK",
+            umbrellaList: []};
     },
     // When the component mounts update the available portals.
-    componentDidMount: function() {
+    componentDidMount: function()
+    {
+        this.getUmbrellas();
         this.updatePortals();
         this.getUserPermissions();
     },
     // Set the value of the umbrella to the value picked on the dropdown
-    setUmbrella: function(newUmbrella) {
+    setUmbrella: function(newUmbrella)
+    {
         this.setState({umbrella: newUmbrella});
     },
     // Calls the functions responsible for picking the portal, setting up the members of the portal,
     // and the groups for the portal.
     doSearch: function(datum) {
-        this.setState({portal: datum});
+        this.setState({portal: datum, view: "PORTAL"});
         this.getMembers(datum);
         this.getGroups(datum);
+    },
+    // Sets the errorData, so that the ErrorBox can report errors
+    handleError: function(data)
+    {
+        this.setState({errorData: data});
+    },
+    // Sets the errorData to blank values, in order to clear the ErrorBox
+    clearError: function()
+    {
+        this.setState({errorData: {message: "", location: ""}});
+    },
+    showPermissionsView: function()
+    {
+        this.setState({view: "PERMISSIONS"});
     },
     // Retrieve the members for the given portal from the server via ajax.
     getMembers: function(datum) {
@@ -96,21 +118,29 @@ var AppSyncBox = React.createClass({
             }.bind(this)
         });
     },
-    // Sets the errorData, so that the ErrorBox can report errors
-    handleError: function(data)
+    // Retrieves the umbrellas from the server via an ajax call.
+    getUmbrellas: function()
     {
-        this.setState({errorData: data});
-    },
-    // Sets the errorData to blank values, in order to clear the ErrorBox
-    clearError: function()
-    {
-        this.setState({errorData: {message: "", location: ""}});
+        $.ajax({
+            url: 'index.php?module=appsync&action=AjaxGetUmbrellaList',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data)
+            {
+                this.setState({umbrellaList: data});
+            }.bind(this),
+            error: function(xhr, status, err)
+            {
+                alert(err.toString())
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
     },
     // Render function
     render: function()
     {
-
         var errorBox;
+        var view;
 
         if(this.state.errorData.message == "")
         {
@@ -121,22 +151,46 @@ var AppSyncBox = React.createClass({
             errorBox = (<ErrorBox errorData={this.state.errorData} />);
         }
 
-        return(
-            <div>
-                <NavigationBox umbrella={this.state.umbrella} setUmbrella={this.setUmbrella} doSearch={this.doSearch} />
-                {errorBox}
+        if(this.state.view == "PORTAL"){
+            view = (
                 <PortalBox portal={this.state.portal} clearError={this.clearError} errorHandler={this.handleError}
                     errorData={this.state.errorData} portalMembers={this.state.portalMembers} listMembers={this.doSearch}
-                    groupList={this.state.groupList} />
+                    groupList={this.state.groupList} userPermissions={this.state.userPermissions}/>
+            );
+        }
+        else if(this.state.view == "PERMISSIONS")
+        {
+            view = (<PermissionsBox umbrellaList={this.state.umbrellaList}/>);
+        }
+        else
+        {
+            view = (<div></div>);
+        }
+        return(
+            <div>
+                <NavigationBox umbrella={this.state.umbrella} setUmbrella={this.setUmbrella} doSearch={this.doSearch}
+                    userPermissions={this.state.userPermissions} showPermissionsView={this.showPermissionsView}
+                    umbrellaList={this.state.umbrellaList}/>
+                {errorBox}
+                {view}
             </div>
         );
     }
 });
 
+
+
 var NavigationBox = React.createClass({
+    showPermissionsView: function()
+    {
+        this.props.showPermissionsView();
+    },
     render: function()
     {
         var portalPick;
+        var settings;
+        var username;
+
         if(this.props.umbrella == undefined)
         {
             portalPick = (
@@ -151,6 +205,44 @@ var NavigationBox = React.createClass({
                 </div>
             );
         }
+
+        if(this.props.userPermissions != null)
+        {
+            if(this.props.userPermissions.deity == "1")
+            {
+
+                settings = (
+                    <li className="dropdown">
+                        <a className="dropdown-toggle" aria-expanded="false" data-toggle="dropdown" href="#" >
+                            <i className="fa fa-cog"></i> Settings <b className="caret"></b>
+                        </a>
+                        <ul className="dropdown-menu">
+                            <li>
+                                <a href="index.php?module=controlpanel">
+                                    Control Panel
+                                </a>
+                            </li>
+                            <li>
+                                <a onClick={this.showPermissionsView}>Permissions</a>
+                            </li>
+                        </ul>
+                    </li>
+                    );
+            }
+        }
+        else {
+            settings = (<li></li>);
+        }
+
+        if(this.props.userPermissions != null)
+        {
+            username = (
+                <li>
+                    <a href="#">{this.props.userPermissions.username}</a>
+                </li>
+                );
+        }
+
         return(
             <div>
                 <nav className="navbar navbar-default">
@@ -169,22 +261,19 @@ var NavigationBox = React.createClass({
                             <ul className="nav navbar-nav">
                                 <form className="navbar-form">
                                     <div className="form-group">
-                                        <UmbrellaPickBox change={this.props.setUmbrella} />
+                                        <UmbrellaPickBox umbrellaList={this.props.umbrellaList} change={this.props.setUmbrella} />
                                     </div>
                                     {portalPick}
                                 </form>
                             </ul>
                             <ul className="nav navbar-nav navbar-right">
+                                {settings}
+                                {username}
                                 <li>
-                                    <a href="index.php?module=controlpanel">
-                                        <i className="fa fa-cog"></i> Control Panel</a>
-                                    </li>
-                                    <li><a href="#">Username Here</a></li>
-                                    <li>
-                                        <a href="index.php?module=users&action=user&command=logout">
-                                            <i className="fa fa-sign-out"></i> Sign out
-                                        </a>
-                                    </li>
+                                    <a href="index.php?module=users&action=user&command=logout">
+                                        <i className="fa fa-sign-out"></i> Sign out
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -194,67 +283,6 @@ var NavigationBox = React.createClass({
     }
 });
 
-var UmbrellaPickBox = React.createClass({
-    // Sets up an initial state for the class, with default values.
-    getInitialState: function()
-    {
-        return({umbrellas: []});
-    },
-    // When the component mounts, get all the umbrellas
-    componentWillMount: function()
-    {
-        this.getUmbrellas();
-    },
-    // Retrieves the value of the dropdown and passes it to the parent component.
-    change: function()
-    {
-        var uChoice = ReactDOM.findDOMNode(this.refs.umbrellaChoice);
-        var value = uChoice.value;
-        this.props.change(value);
-    },
-    // Retrieves the umbrellas from the server via an ajax call.
-    getUmbrellas: function()
-    {
-        $.ajax({
-            url: 'index.php?module=appsync&action=AjaxGetUmbrellaList',
-            type: 'GET',
-            dataType: 'json',
-            success: function(data)
-            {
-                this.setState({umbrellas: data})
-            }.bind(this),
-            error: function(xhr, status, err)
-            {
-                alert(err.toString())
-                console.error(this.props.url, status, err.toString());
-            }.bind(this)
-        });
-    },
-    // Render function
-    render: function()
-    {
-        var options = Array({umbrella_id: -1, umbrella_name: "Pick an umbrella..."});
-        var data = this.state.umbrellas;
-        var i = 0;
-        for(i; i < data.length; i++)
-        {
-            options.push(data[i]);
-        }
-
-        var selectOptions = options.map(function(node)
-        {
-            return(<option key={node.umbrella_id} value={node.umbrella_id}>{node.umbrella_name}</option>)
-        });
-
-        return(
-            <div>
-                <select onChange={this.change} className="form-control" ref="umbrellaChoice">
-                    {selectOptions}
-                </select>
-            </div>
-        );
-    }
-});
 
 var PortalPickBox = React.createClass({
     // On successful mount set up the autofill using Bloodhound.

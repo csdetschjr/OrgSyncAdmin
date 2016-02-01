@@ -4,7 +4,7 @@ namespace AppSync\Command;
 
 
 /**
-* Controller class for getting portal search suggestion data in JSON format.
+* Controller class for getting students currently in a portal.
 *
 * @author Chris Detsch
 * @package intern
@@ -18,6 +18,20 @@ class AjaxGetPortalMembers {
 
     public function execute()
     {
+        $portal = $_REQUEST['org_id'];
+        $username = \Current_User::getUsername();
+
+        $portalObjs = \AppSync\PortalFactory::getPortalById($portal);
+        $umbrellaId = $portalObjs[0]->getUmbrellaId();
+
+        $permissions = \AppSync\UmbrellaAdminFactory::getUmbrellaAdmin($username, $umbrellaId);
+
+        if(sizeof($permissions) == 0)
+        {
+            echo '<div style="display: none;">User does not have permission to access this data.</div>';
+            exit;
+        }
+
         try
         {
             $portalMembers = $this->getOrgMembers($_REQUEST['org_id']);

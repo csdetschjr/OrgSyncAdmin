@@ -4,6 +4,15 @@ namespace AppSync;
 
 use \Database;
 
+/**
+ * Factory class for retrieving and saving Umbrellas to and from the database.
+ *
+ * @author Chris Detsch
+ * @package appsync
+ *
+ */
+
+
 class UmbrellaFactory {
 
     public static function getUmbrellas()
@@ -18,6 +27,24 @@ class UmbrellaFactory {
         $stmt->setFetchMode(\PDO::FETCH_CLASS, 'AppSync\UmbrellaRestored');
 
         return $stmt->fetchAll();
+    }
+
+    public static function getUmbrellaByOrgId($id)
+    {
+        $db = PdoFactory::getPdoInstance();
+
+        $query = 'SELECT * FROM appsync_umbrella WHERE orgsync_id = :id';
+
+        $params = array(
+            'id' => $id
+        );
+
+        $stmt = $db->prepare($query);
+
+        $stmt->execute($params);
+        $stmt->setFetchMode(\PDO::FETCH_CLASS, 'AppSync\UmbrellaRestored');
+
+        return $stmt->fetch();
     }
 
     public static function save($umbrella)

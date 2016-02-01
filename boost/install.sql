@@ -9,18 +9,14 @@ CREATE TABLE appsync_umbrella (
 
 CREATE SEQUENCE appsync_umbrella_seq;
 
-INSERT INTO appsync_umbrella (id, name, orgsync_id) VALUES (nextval('appsync_umbrella_seq'), 'CSIL', 87895);
-INSERT INTO appsync_umbrella (id, name, orgsync_id) VALUES (nextval('appsync_umbrella_seq'), 'Orientation', 112682);
-INSERT INTO appsync_umbrella (id, name, orgsync_id) VALUES (nextval('appsync_umbrella_seq'), 'Student Development', 101226);
-INSERT INTO appsync_umbrella (id, name, orgsync_id) VALUES (nextval('appsync_umbrella_seq'), 'University Housing', 107843);
-
-CREATE TABLE appsync_permission (
+CREATE TABLE appsync_umbrella_admin (
     id INT NOT NULL,
-    username VARCHAR NOT NULL UNIQUE,
-    umbrella_id INT NOT NULL
+    username VARCHAR NOT NULL,
+    umbrella_id INT REFERENCES appsync_umbrella(orgsync_id),
+    PRIMARY KEY(id)
 );
 
-CREATE SEQUENCE appsync_permission_seq;
+CREATE SEQUENCE appsync_umbrella_admin_seq;
 
 CREATE TABLE appsync_portal (
     orgsync_id INT NOT NULL UNIQUE,
@@ -35,21 +31,12 @@ CREATE TABLE appsync_event (
     PRIMARY KEY(id)
 );
 
-//fake table for use with testing
-CREATE TABLE sdr_member (
-    id INT NOT NULL,
-    username VARCHAR NOT NULL,
-    PRIMARY KEY(id)
-);
-
-INSERT INTO sdr_member (id, username) VALUES (900325987, 'cd62936');
-
-CREATE TABLE appsync_log (
+CREATE TABLE appsync_log_entry (
     id INT NOT NULL,
     type INT NOT NULL REFERENCES appsync_event(id),
-    response VARCHAR NOT NULL,
     description VARCHAR NOT NULL,
     username VARCHAR NOT NULL,
+    occurred_on INT NOT NULL,
     PRIMARY KEY(id)
 );
 
@@ -58,7 +45,5 @@ CREATE TABLE appsync_settings (
     value VARCHAR NOT NULL,
     PRIMARY KEY(setting)
 );
-
-
 
 COMMIT;

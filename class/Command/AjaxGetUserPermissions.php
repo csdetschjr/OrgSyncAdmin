@@ -3,7 +3,7 @@
 namespace AppSync\Command;
 
 /**
-* Controller class for getting portal search suggestion data in JSON format.
+* Controller class for retrieving the permissions for the current user.
 *
 * @author Chris Detsch
 * @package intern
@@ -19,9 +19,14 @@ class AjaxGetUserPermissions {
     {
         $username = \Current_User::getUsername();
 
-        $permissions = \AppSync\PermissionFactory::getPermissionsByUsername($username);
+        $permissions = \AppSync\UmbrellaAdminFactory::getUmbrellaAdminByUsername($username);
 
-        var_dump($permissions);exit;
+
+        $returnData = array('username' => \Current_User::getUsername(),
+                            'deity' => \Current_User::isDeity(),
+                            'view' => \Current_User::allow('appsync', 'view'),
+                            'purge' => \Current_User::allow('appsync', 'purge'));
+
 
         echo json_encode($returnData);
         exit;

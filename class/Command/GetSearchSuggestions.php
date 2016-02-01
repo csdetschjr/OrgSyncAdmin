@@ -22,6 +22,18 @@ class GetSearchSuggestions {
 
     public function execute()
     {
+
+        $umbrellaId = $_REQUEST['umbrellaId'];
+        $username = \Current_User::getUsername();
+
+        $permissions = \AppSync\UmbrellaAdminFactory::getUmbrellaAdmin($username, $umbrellaId);
+
+        if(sizeof($permissions) == 0)
+        {
+            echo '<div style="display: none;">User does not have permission to access this data.</div>';
+            exit;
+        }
+
         try
         {
             $portals = \AppSync\PortalFactory::getPortals();

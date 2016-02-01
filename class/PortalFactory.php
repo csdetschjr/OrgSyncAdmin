@@ -4,6 +4,14 @@ namespace AppSync;
 
 use \Database;
 
+/**
+ * Factory class for retrieving and saving Portals to and from the database.
+ *
+ * @author Chris Detsch
+ * @package appsync
+ *
+ */
+
 class PortalFactory {
 
     public static function getPortals()
@@ -69,7 +77,8 @@ class PortalFactory {
 
             $params = array(
                 'name' => $portal->getName(),
-                'umbrellaId' => $portal->getUmbrellaId()
+                'umbrellaId' => $portal->getUmbrellaId(),
+                'orgsyncId' => $orgsync_id
             );
         }else{
             // Insert
@@ -81,7 +90,6 @@ class PortalFactory {
                 'umbrellaId' => $portal->getUmbrellaId()
             );
         }
-
         $stmt = $db->prepare($query);
         $stmt->execute($params);
     }

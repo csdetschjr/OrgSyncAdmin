@@ -66,7 +66,7 @@ var ControlActionBox = React.createClass({
         {
             return(
                 <div>
-                    <ActionBox complete={this.completeState} inputData={this.props.inputData}
+                    <ActionBox complete={this.props.completeState} inputData={this.props.inputData}
                         outputData={this.props.outputData} state={this.props.state} />
                 </div>
             );
@@ -257,6 +257,7 @@ var ActionBox = React.createClass({
             data.push(datum);
 
         }
+        console.log(data)
         var rows = data.map(function(node){
 
             if(node.status == 0)
@@ -297,6 +298,9 @@ var ActionBox = React.createClass({
                 );
             }
         });
+
+
+        console.log(rows);
 
         var percentComplete = (cmpCnt / this.props.inputData.length) * 100;
 

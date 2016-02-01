@@ -2,6 +2,15 @@
 
 namespace AppSync;
 
+/**
+ * Controller class for handling the requests from the client, performing the
+ * appropriate action for each request.
+ *
+ * @author Chris Detsch
+ * @package appsync
+ *
+ */
+
 class AppSync {
 
     private $content;
@@ -33,5 +42,3 @@ class AppSync {
     }
 
 }
-
-?>

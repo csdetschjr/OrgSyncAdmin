@@ -2,7 +2,15 @@
 
 namespace AppSync;
 
-class Permission {
+/**
+ * Object class for the UmbrellaAdmin
+ *
+ * @author Chris Detsch
+ * @package appsync
+ *
+ */
+
+class UmbrellaAdmin {
     protected $id;
     protected $username;
     protected $umbrella_id;

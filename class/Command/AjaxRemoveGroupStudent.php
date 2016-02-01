@@ -2,6 +2,15 @@
 
 namespace AppSync\Command;
 
+/**
+ * Controller class for handling a request to remove a student from a particular
+ * group in OrgSync.
+ *
+ * @author Chris Detsch
+ * @package appsync
+ *
+ */
+
 class AjaxRemoveGroupStudent extends \AppSync\Command {
 
     public function getRequestVars(){
@@ -13,6 +22,18 @@ class AjaxRemoveGroupStudent extends \AppSync\Command {
         $input = $_REQUEST['inputData'];
         $portal = $_REQUEST['portalId'];
         $groupId = $_REQUEST['groupId'];
+        $username = \Current_User::getUsername();
+
+        $portalObjs = \AppSync\PortalFactory::getPortalById($portal);
+        $umbrellaId = $portalObjs[0]->getUmbrellaId();
+
+        $permissions = \AppSync\UmbrellaAdminFactory::getUmbrellaAdmin($username, $umbrellaId);
+
+        if(sizeof($permissions) == 0)
+        {
+            echo json_encode(array('status' => 0, 'message' => 'You do not have permission to add students to this group.'));
+            exit;
+        }
 
         if(!is_numeric($input))
         {

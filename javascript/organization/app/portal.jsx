@@ -4,13 +4,13 @@ import ControlBox from './control.jsx';
 
 export default class PortalBox extends React.Component {
   render() {
-    return <PortalTopControlBox portal={this.props.portal} clearError={this.props.clearError} errorHandler={this.props.handleError}
+    return <PortalViewBox portal={this.props.portal} clearError={this.props.clearError} errorHandler={this.props.handleError}
         errorData={this.props.errorData} portalMembers={this.props.portalMembers} listMembers={this.props.listMembers}
-        groupList={this.props.groupList}/>;
+        groupList={this.props.groupList} userPermissions={this.props.userPermissions}/>;
   }
 }
 
-var PortalTopControlBox = React.createClass({
+var PortalViewBox = React.createClass({
     // Sets up an initial state for the class, with default values.
     getInitialState: function()
     {
@@ -214,7 +214,7 @@ var PortalTopControlBox = React.createClass({
     // Retrieve the members for the given group from the server via ajax.
     getGroupMembers: function(newGroup)
     {
-        var inputData = {groupId: newGroup};
+        var inputData = {groupId: newGroup, portalId: this.props.portal.id};
         $.ajax({
             url: 'index.php?module=appsync&action=AjaxGetGroupMembers',
             dataType: 'json',
@@ -311,42 +311,36 @@ var PortalTopControlBox = React.createClass({
     // Render function
     render: function()
     {
-        if(this.props.portal == undefined)
+        console.log(this.props.userPermissions)
+        var linkStyle = {fontSize: '12px'};
+        var link;
+        if(!this.state.showDropDown)
         {
-            return(
-                <div></div>
-            );
+            var link = (<a style={linkStyle} onClick={this.showGroup}>Switch Group</a>);
         }
-        else {
-            var linkStyle = {fontSize: '12px'};
-            var link;
-            if(!this.state.showDropDown)
-            {
-                var link = (<a style={linkStyle} onClick={this.showGroup}>Change Group</a>);
-            }
-            else
-            {
+        else
+        {
                 var dropdown = (<div className="col-md-3">
-                    <GroupPickBox groups={this.props.groupList} change={this.changeGroup}
-                        state={this.state.toggleState} groupId={this.state.groupId}/>
-                </div>)
-            }
-            return(
-                <div>
-                    <h2>
-                        {this.props.portal.name} <small>{this.state.groupName}</small> {link}
-                    </h2>
-                    {dropdown}
-                    <div className="col-md-12">
-                        <ToggleBox toggle={this.changeToggleState} state={this.state.toggleState} clear={this.clear} groupId={this.state.groupId}/>
-                        <ControlBox add={this.addSubmit} remove={this.removeSubmit} completeState={this.completeState} state={this.state.toggleState}
-                            inputData={this.state.inputListData} outputData={this.state.outputListData} portalMembers={this.props.portalMembers}
-                            errorData={this.props.errorData} singleRemove={this.singleRemove} groupMembers={this.state.groupMembers}
-                            groupId={this.state.groupId}/>
-                    </div>
-                </div>
-            );
+                <GroupPickBox groups={this.props.groupList} change={this.changeGroup}
+                    state={this.state.toggleState} groupId={this.state.groupId}/>
+            </div>)
         }
+        return(
+            <div>
+                <h2>
+                    {this.props.portal.name} <small>{this.state.groupName}</small> {link}
+                </h2>
+                {dropdown}
+                <div className="col-md-12">
+                    <ToggleBox toggle={this.changeToggleState} state={this.state.toggleState} clear={this.clear} groupId={this.state.groupId}
+                        userPermissions={this.props.userPermissions}/>
+                    <ControlBox add={this.addSubmit} remove={this.removeSubmit} completeState={this.completeState} state={this.state.toggleState}
+                        inputData={this.state.inputListData} outputData={this.state.outputListData} portalMembers={this.props.portalMembers}
+                        errorData={this.props.errorData} singleRemove={this.singleRemove} groupMembers={this.state.groupMembers}
+                        groupId={this.state.groupId}/>
+                </div>
+            </div>
+        );
     }
 });
 
@@ -468,7 +462,8 @@ var ToggleBox = React.createClass({
                         </div>
                     </div>
                     <div className="col-md-3 col-md-offset-3">
-                        <ButtonBox clear={this.clear} state={this.props.state} groupId={this.props.groupId}/>
+                        <ButtonBox clear={this.clear} state={this.props.state} groupId={this.props.groupId}
+                            userPermissions={this.props.userPermissions}/>
                     </div>
                 </div>
             );
@@ -486,7 +481,7 @@ var ButtonBox = React.createClass({
     // Render method
     render: function()
     {
-        if(this.props.state == "PROCESSING")
+        if(this.props.state == "PROCESSING" || !this.props.userPermissions.purge)
         {
             return (<div></div>);
         }
