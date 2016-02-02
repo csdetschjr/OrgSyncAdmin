@@ -38,7 +38,7 @@ class AjaxGetPortalMembers {
 
             echo json_encode($portalMembers);
 
-        }catch(Exception $e)
+        }catch(\Exception $e)
         {
             echo '<div style="display: none;">'.$e->getMessage().'</div>';
         }
@@ -46,8 +46,11 @@ class AjaxGetPortalMembers {
     }
 
 
-
-    function getOrgMembers($org_id){
+    /**
+     *  Retrieve the current members of a portal from orgsync.
+     *  @return array
+     */
+    public function getOrgMembers($org_id){
         // This will need to be moved to the settings.
         $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
         $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();

@@ -15,6 +15,10 @@ use \Database;
 
 class UmbrellaAdminFactory {
 
+    /**
+     * Retrieves the Umbrella admins associated with this username.
+     * @return array of UmbrellaAdminRestored
+     */
     public static function getUmbrellaAdminByUsername($username)
     {
         $db = PdoFactory::getPdoInstance();
@@ -32,6 +36,10 @@ class UmbrellaAdminFactory {
         return $stmt->fetchAll();
     }
 
+    /**
+     * Retrieves the UmbrellaAdmin associated with the given username and umbrellaId
+     * @return UmbrellaAdminRestored
+     */
     public static function getUmbrellaAdmin($username, $umbrellaId)
     {
         $db = PdoFactory::getPdoInstance();
@@ -50,6 +58,10 @@ class UmbrellaAdminFactory {
         return $stmt->fetchAll();
     }
 
+    /**
+     * Retrieves all the UmbrellaAdmins
+     * @return array of UmbrellaAdminRestored objects
+     */
     public static function getAllUmbrellaAdmins()
     {
         $db = PdoFactory::getPdoInstance();
@@ -64,6 +76,10 @@ class UmbrellaAdminFactory {
         return $stmt->fetchAll();
     }
 
+    /**
+     * Removes an UmbrellaAdmin with the given username and umbrellaId
+     *
+     */
     public static function removeUmbrellaAdmin($username, $umbrellaId)
     {
         $db = PdoFactory::getPdoInstance();
@@ -79,7 +95,10 @@ class UmbrellaAdminFactory {
         $stmt->execute($params);
     }
 
-
+    /**
+     * Saves an umbrellaAdmin to the database, if the umbrellaAdmin object already exists updates
+     * it with the new values.
+     */
     public static function save($umbrellaAdmin)
     {
         $db = PdoFactory::getPdoInstance();

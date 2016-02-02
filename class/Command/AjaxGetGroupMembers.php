@@ -38,7 +38,7 @@ class AjaxGetGroupMembers {
 
             echo json_encode($groupMembers);
 
-        }catch(Exception $e)
+        }catch(\Exception $e)
         {
             echo '<div style="display: none;">'.$e->getMessage().'</div>';
         }
@@ -46,8 +46,11 @@ class AjaxGetGroupMembers {
     }
 
 
-
-    function getGroupMembers($group_id)
+    /**
+     * Retrieves the group members for a given groupId.
+     * @return group members array
+     */
+    public function getGroupMembers($group_id)
     {
         $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
         $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();

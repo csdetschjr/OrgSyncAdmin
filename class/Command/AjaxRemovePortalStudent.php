@@ -73,8 +73,12 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
         exit;
     }
 
-
-    function getBannerIDFromEmail($email){
+    /**
+     * Retrieves the students bannerId by using their email/username to find them
+     * in the sdr_member database.
+     * @return bannerId
+     */
+    public function getBannerIDFromEmail($email){
         $parts = explode("@", $email);
         $username = strtolower($parts[0]);
         if(!empty($username)){
@@ -99,7 +103,7 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
     *
     *
     */
-    function removeAccount($user_id, $org_id){
+    public function removeAccount($user_id, $org_id){
         $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
         $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
         $id = $this->getIDFromUsername($user_id);
@@ -118,8 +122,11 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
         }
     }
 
-
-    function getIDFromUsername($username){
+    /**
+     * Retrieves the Id for a user from orgsync
+     * @return id
+     */
+    public function getIDFromUsername($username){
         $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
         $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
         $curl = curl_init();
@@ -134,8 +141,11 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
         return false;
     }
 
-
-    function getStudentByBanner($banner)
+    /**
+     * Retrieves student objects from banner
+     * @return student
+     */
+    public function getStudentByBanner($banner)
     {
         $base_url = \AppSync\SettingFactory::getSetting('banner_url')->getValue();
 

@@ -14,6 +14,10 @@ use \Database;
 
 class SettingFactory {
 
+    /**
+     * Retrieves the setting from the database.
+     * @return SettingRestored
+     */
     public static function getSetting($setting)
     {
         $db = PdoFactory::getPdoInstance();

@@ -39,7 +39,7 @@ class AjaxGetPortalGroups {
 
             echo json_encode($portalGroups);
 
-        }catch(Exception $e)
+        }catch(\Exception $e)
         {
             echo '<div style="display: none;">'.$e->getMessage().'</div>';
         }
@@ -47,8 +47,11 @@ class AjaxGetPortalGroups {
     }
 
 
-
-    function getOrgGroups($org_id){
+    /**
+     * Retrieve the groups for a given portal.
+     * @return array of groups
+     */
+    public function getOrgGroups($org_id){
         // This will need to be moved to the settings.
         $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
         $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();

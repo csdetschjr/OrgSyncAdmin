@@ -9,6 +9,10 @@ namespace AppSync\UI;
  */
 class TopUI implements UI
 {
+    /**
+     * Returns the proccessed template that will be displayed
+     * @return template
+     */
     public function display(){
       $tpl = array();
 

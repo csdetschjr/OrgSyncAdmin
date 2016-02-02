@@ -43,7 +43,7 @@ class GetSearchSuggestions {
 
             $portList = $this->portalFuzzySearch($searchString, $umbrella, $portals);
             echo $this->encodePortals($portList);
-        }catch(Exception $e)
+        }catch(\Exception $e)
         {
             echo '<div style="display: none;">'.$e->getMessage().'</div>';
         }
@@ -83,20 +83,6 @@ class GetSearchSuggestions {
         }
 
         return json_encode($portalsEncoded);
-    }
-
-    /**
-     * Attempts to find a student by their student ID. Throws an exception if the student
-     * cannot be located.
-     *
-     * @param $studentId The student's ID number.
-     * @throws StudentNotFoundException
-     */
-    private function studentIdSearch($studentId)
-    {
-        $student = StudentProviderFactory::getProvider()->getStudent($studentId, Term::timeToTerm(time()));
-
-        return $student;
     }
 
 }
