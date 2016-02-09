@@ -15,16 +15,25 @@ class AppSync {
 
     private $content;
 
+
     public function __construct()
     {
 
     }
 
+    /**
+     * Returns this classes content.
+     * @return content
+     */
     public function getContent()
     {
         return $this->content;
     }
 
+    /**
+     * Handles the requests by first retrieving them and setting the content to the correct
+     * command corresponding to the action.  If the request is not set just goes to the main menu.
+     */
     public function handleRequest()
     {
         // Fetch the action from the REQUEST.

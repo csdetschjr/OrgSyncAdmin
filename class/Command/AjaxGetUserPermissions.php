@@ -17,11 +17,6 @@ class AjaxGetUserPermissions {
 
     public function execute()
     {
-        $username = \Current_User::getUsername();
-
-        $permissions = \AppSync\UmbrellaAdminFactory::getUmbrellaAdminByUsername($username);
-
-
         $returnData = array('username' => \Current_User::getUsername(),
                             'deity' => \Current_User::isDeity(),
                             'view' => \Current_User::allow('appsync', 'view'),

@@ -74,8 +74,12 @@ class AjaxAddPortalStudent extends \AppSync\Command {
         exit;
     }
 
-
-    function getBannerIDFromEmail($email){
+    /**
+     * Retrieves the students bannerId by using their email/username to find them
+     * in the sdr_member database.
+     * @return bannerId
+     */
+    public function getBannerIDFromEmail($email){
         $parts = explode("@", $email);
         $username = strtolower($parts[0]);
         if(!empty($username)){
@@ -94,7 +98,13 @@ class AjaxAddPortalStudent extends \AppSync\Command {
         }
     }
 
-    function userToOrg($user_id, $org_id){
+    /**
+    * Place a user or users into a portal. User can be a single user id or and array of ids
+    *
+    * @param int $user_id (can be array of user id's), int $group_id (groups id)
+    * @return boolean (success or not)
+    */
+    public function userToOrg($user_id, $org_id){
         $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
         $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
         $id = $this->getIDFromUsername($user_id);
@@ -115,7 +125,11 @@ class AjaxAddPortalStudent extends \AppSync\Command {
         }
     }
 
-    function getIDFromUsername($username){
+    /**
+     * Retrieves the Id for a user from orgsync
+     * @return id
+     */
+    public function getIDFromUsername($username){
         $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
         $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
         $curl = curl_init();
@@ -130,7 +144,11 @@ class AjaxAddPortalStudent extends \AppSync\Command {
         return false;
     }
 
-    function getStudentByBanner($banner)
+    /**
+     * Retrieves student objects from banner
+     * @return student
+     */
+    public function getStudentByBanner($banner)
     {
         $base_url = \AppSync\SettingFactory::getSetting('banner_url')->getValue();
 

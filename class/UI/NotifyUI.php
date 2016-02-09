@@ -20,7 +20,7 @@ class NotifyUI implements UI
 
     /**
      * Pop all notifications from NQ. Get the type for use with CSS.
-     * @return - Properly styled notifications.
+     * @return Properly styled notifications.
      */
     public function display()
     {
@@ -52,4 +52,3 @@ class NotifyUI implements UI
         }
     }
 }
-?>

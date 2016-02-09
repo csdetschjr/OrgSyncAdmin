@@ -31,5 +31,3 @@ $link[] = array(
         'image'         => 'freedo_Glossy_Globe_small.png',
         'tab'           => 'content'
         );
-
-?>

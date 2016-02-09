@@ -14,6 +14,10 @@ use \Database;
 
 class PortalFactory {
 
+    /**
+     * Retrieves all the portals from the database.
+     * @return array of PortalRestored objects
+     */
     public static function getPortals()
     {
         $db = PdoFactory::getPdoInstance();
@@ -29,7 +33,10 @@ class PortalFactory {
     }
 
 
-
+    /**
+     * Retrieves the portal matching the given orgsyncId from the database.
+     * @return array containing one PortalRestored object
+     */
     public static function getPortalById($orgsyncId)
     {
         $db = PdoFactory::getPdoInstance();
@@ -48,6 +55,10 @@ class PortalFactory {
         return $stmt->fetchAll();
     }
 
+    /**
+     * Retrieves the portal matching the given name from the database.
+     * @return array containing one PortalRestored object
+     */
     public static function getPortalByName($name)
     {
         $db = PdoFactory::getPdoInstance();
@@ -66,6 +77,10 @@ class PortalFactory {
         return $stmt->fetchAll();
     }
 
+    /**
+     * Saves a portal to the database, if the portal object already exists updates
+     * it with the new values.
+     */
     public static function save($portal)
     {
         $db = PdoFactory::getPdoInstance();

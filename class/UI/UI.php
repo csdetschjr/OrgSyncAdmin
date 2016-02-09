@@ -7,6 +7,8 @@ namespace AppSync\UI;
  */
 interface UI
 {
+    /**
+     * @return null
+     */
     public function display();
 }
-?>

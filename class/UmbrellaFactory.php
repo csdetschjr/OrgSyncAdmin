@@ -15,6 +15,10 @@ use \Database;
 
 class UmbrellaFactory {
 
+    /**
+     * Retrieves all the Umbrellas
+     * @return array of UmbrellaRestored objects
+     */
     public static function getUmbrellas()
     {
         $db = PdoFactory::getPdoInstance();
@@ -29,6 +33,10 @@ class UmbrellaFactory {
         return $stmt->fetchAll();
     }
 
+    /**
+     * Retrieves the Umbrella admins associated with this id.
+     * @return UmbrellaRestored
+     */
     public static function getUmbrellaByOrgId($id)
     {
         $db = PdoFactory::getPdoInstance();
@@ -47,6 +55,11 @@ class UmbrellaFactory {
         return $stmt->fetch();
     }
 
+    /**
+     * Saves an umbrella to the database, if the umbrella object already exists updates
+     * it with the new values.  Not currently used but may be useful in later implementations
+     * of the application.
+     */
     public static function save($umbrella)
     {
         $db = PdoFactory::getPdoInstance();
@@ -57,8 +70,8 @@ class UmbrellaFactory {
             $query = "UPDATE appsync_umbrella SET (name, orgsync_id) = (:name, :orgsyncId) WHERE id = :id";
 
             $params = array(
-                'name' => $contract->getName(),
-                'orgsyncId' => $contract->getOrgSyncId(),
+                'name' => $umbrella->getName(),
+                'orgsyncId' => $umbrella->getOrgSyncId(),
                 'id' => $id
             );
 
@@ -67,8 +80,8 @@ class UmbrellaFactory {
             $query = "INSERT INTO appsync_umbrella (id, name, orgsync_id) VALUES (nextval('appsync_umbrella_seq'), :name, :orgsyncId)";
 
             $params = array(
-                'name' => $contract->getName(),
-                'orgsyncId' => $contract->getOrgSyncId()
+                'name' => $umbrella->getName(),
+                'orgsyncId' => $umbrella->getOrgSyncId()
             );
         }
 
