@@ -14,7 +14,7 @@ namespace AppSync\Command;
 class AjaxRemoveGroupStudent extends \AppSync\Command {
 
     public function getRequestVars(){
-        return array('action'=>'AjaxRemoveStudent');
+        return array('action'=>'AjaxRemoveGroupStudent');
     }
 
     public function execute()
@@ -117,10 +117,26 @@ class AjaxRemoveGroupStudent extends \AppSync\Command {
         if($result){
             $result = json_decode($result);
             if(is_object($result) && $result->success == "true")
-            return TRUE;
+            {
+                return TRUE;
+            }
             else
-            return FALSE;
-        }else{
+            {
+                $logEntry = new \AppSync\LogEntry(null,
+                                     'Attempted to from user from group in Orgsync API via removeGroupAccount function, response was ' . $result->message,
+                                     \Current_User::getUsername(),
+                                     time());
+                \AppSync\LogEntryFactory::save($logEntry);
+                return FALSE;
+            }
+        }
+        else
+        {
+            $logEntry = new \AppSync\LogEntry(null,
+                                 'Attempted to from user from group in Orgsync API via removeGroupAccount function, response was ' . $result->message,
+                                 \Current_User::getUsername(),
+                                 time());
+            \AppSync\LogEntryFactory::save($logEntry);
             return FALSE;
         }
     }
@@ -141,6 +157,11 @@ class AjaxRemoveGroupStudent extends \AppSync\Command {
             if(!empty($result->id))
             return $result->id;
         }
+        $logEntry = new \AppSync\LogEntry(null,
+                                 'Attempted to retrieve Id for group remove from Orgsync API via getIDFromUsername function, response was ' . $result->message,
+                                 \Current_User::getUsername(),
+                                 time());
+        \AppSync\LogEntryFactory::save($logEntry);
         return false;
     }
 

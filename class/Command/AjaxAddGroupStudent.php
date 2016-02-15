@@ -12,7 +12,7 @@ namespace AppSync\Command;
 class AjaxAddGroupStudent extends \AppSync\Command {
 
     public function getRequestVars(){
-        return array('action'=>'AjaxAddStudent');
+        return array('action'=>'AjaxAddGroupStudent');
     }
 
     public function execute()
@@ -120,11 +120,21 @@ class AjaxAddGroupStudent extends \AppSync\Command {
             }
             else
             {
+                $logEntry = new \AppSync\LogEntry(null,
+                                     'Attempted to add user to group in Orgsync API via userToGroup function, response was ' . $result->message,
+                                     \Current_User::getUsername(),
+                                     time());
+                \AppSync\LogEntryFactory::save($logEntry);
                 return FALSE;
             }
         }
         else
         {
+            $logEntry = new \AppSync\LogEntry(null,
+                                 'Attempted to add user to group in Orgsync API via userToGroup function, response was ' . $result->message,
+                                 \Current_User::getUsername(),
+                                 time());
+            \AppSync\LogEntryFactory::save($logEntry);
             return FALSE;
         }
     }
@@ -147,6 +157,11 @@ class AjaxAddGroupStudent extends \AppSync\Command {
                 return $result->id;
             }
         }
+        $logEntry = new \AppSync\LogEntry(null,
+                                 'Attempted to retrieve Id for group add from Orgsync API via getIDFromUsername function, response was ' . $result->message,
+                                 \Current_User::getUsername(),
+                                 time());
+        \AppSync\LogEntryFactory::save($logEntry);
         return false;
     }
 

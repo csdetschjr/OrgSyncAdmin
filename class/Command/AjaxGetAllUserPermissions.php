@@ -20,7 +20,7 @@ class AjaxGetAllUserPermissions {
     {
         if(!(\Current_User::isDeity()))
         {
-            echo json_encode("user does not have permission to change permissions");
+            echo json_encode("user does not have permission to retrieve permissions");
             exit;
         }
 

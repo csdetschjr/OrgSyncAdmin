@@ -14,7 +14,7 @@ namespace AppSync\Command;
 class AjaxAddPortalStudent extends \AppSync\Command {
 
     public function getRequestVars(){
-        return array('action'=>'AjaxAddStudent');
+        return array('action'=>'AjaxAddPortalStudent');
     }
 
     public function execute()
@@ -108,6 +108,10 @@ class AjaxAddPortalStudent extends \AppSync\Command {
         $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
         $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
         $id = $this->getIDFromUsername($user_id);
+        if(!$id)
+        {
+            return $id;
+        }
         $import_url = '';
         $import_url = $base_url."orgs/$org_id/accounts/add";
         $curl = curl_init();
@@ -117,10 +121,24 @@ class AjaxAddPortalStudent extends \AppSync\Command {
         if($result){
             $result = json_decode($result);
             if(is_object($result) && $result->success == "true")
-            return TRUE;
+            {
+                return TRUE;
+            }
             else
-            return FALSE;
+            {
+                $logEntry = new \AppSync\LogEntry(null,
+                                     'Attempted to add user to portal in Orgsync API via userToOrg function, response was ' . $result->message,
+                                     \Current_User::getUsername(),
+                                     time());
+                \AppSync\LogEntryFactory::save($logEntry);
+                return FALSE;
+            }
         }else{
+            $logEntry = new \AppSync\LogEntry(null,
+                                 'Attempted to add user to portal in Orgsync API via userToOrg function, response was ' . $result->message,
+                                 \Current_User::getUsername(),
+                                 time());
+            \AppSync\LogEntryFactory::save($logEntry);
             return FALSE;
         }
     }
@@ -141,6 +159,11 @@ class AjaxAddPortalStudent extends \AppSync\Command {
             if(!empty($result->id))
             return $result->id;
         }
+        $logEntry = new \AppSync\LogEntry(null,
+                                 'Attempted to retrieve Id for portal add from Orgsync API via getIDFromUsername function, response was ' . $result->message,
+                                 \Current_User::getUsername(),
+                                 time());
+        \AppSync\LogEntryFactory::save($logEntry);
         return false;
     }
 
