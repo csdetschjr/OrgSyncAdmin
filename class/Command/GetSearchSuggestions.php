@@ -7,7 +7,7 @@ namespace AppSync\Command;
  * Controller class for getting portal search suggestion data in JSON format.
  *
  * @author Chris Detsch
- * @package intern
+ * @package appsync
  */
 class GetSearchSuggestions {
 

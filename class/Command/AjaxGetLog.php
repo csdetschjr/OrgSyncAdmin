@@ -3,8 +3,7 @@
 namespace AppSync\Command;
 
 /**
- * Controller class for handling a request to retrieve all the possible umbrellas
- * This is used when adding permissions.
+ * Controller class for handling a request to retrieve all the log entries.
  *
  * @author Chris Detsch
  * @package appsync

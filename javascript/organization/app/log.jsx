@@ -7,20 +7,27 @@ export default class LogBox extends React.Component {
   }
 }
 
+// Component responsible for the logic behind the log display as well as communication
+// with the server.
 var LogViewBox = React.createClass({
+    // Sets up an initial state for the class, with default values.
     getInitialState: function()
     {
         return {log: [], retrieved: false, users: [], filter: false, username: ""}
     },
+    // When the component mounts retrieve the log and the users.
     componentWillMount: function()
     {
         this.getLog();
         this.getUsernames();
     },
+    // Toggles the filter value
     filterToggle: function()
     {
         this.setState({filter: !this.state.filter});
     },
+    // Changes the username to the one in users array corresponding with the passed
+    // in index.
     changeUsername: function(index)
     {
         if(index == -1)
@@ -32,9 +39,9 @@ var LogViewBox = React.createClass({
             this.setState({username: this.state.users[index].username});
         }
     },
+    // Retrieves the log from the server via AJAX.
     getLog: function()
     {
-        //AJAX request for the dbpager set innerHTML on success
         $.ajax({
             url: 'index.php?module=appsync&action=AjaxGetLog',
             type: 'GET',
@@ -49,6 +56,7 @@ var LogViewBox = React.createClass({
             }.bind(this)
         });
     },
+    // Retrieves the usernames from the server via AJAX.
     getUsernames: function()
     {
         $.ajax({
@@ -145,11 +153,14 @@ var LogViewBox = React.createClass({
     }
 });
 
+// Component responsible for the logic behind setting the filter
 var FilterBox = React.createClass({
+    // On click function that calls the parent's filterToggle method.
     filterToggle: function()
     {
         this.props.filterToggle();
     },
+    // An on change function responsible for passing the changed value up to the parent component.
     changeFilterUsername: function()
     {
         var uChoice = ReactDOM.findDOMNode(this.refs.usernameChoice);

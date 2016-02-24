@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import PortalBox from './portal.jsx';
 import PermissionsBox from './permissions.jsx';
 import LogBox from './log.jsx';
+import OrgsyncSettingsBox from './orgsyncSettings.jsx';
 import UmbrellaPickBox from './umbrellaPick.jsx';
 
 
@@ -56,6 +57,10 @@ var AppSyncBox = React.createClass({
     showLogView: function()
     {
         this.setState({view: "LOG"})
+    },
+    showOrgsyncSettings: function()
+    {
+        this.setState({view: "ORGSYNC_SETTINGS"});
     },
     // Retrieve the members for the given portal from the server via ajax.
     getMembers: function(datum) {
@@ -172,6 +177,10 @@ var AppSyncBox = React.createClass({
         {
             view = (<LogBox/>);
         }
+        else if(this.state.view == "ORGSYNC_SETTINGS")
+        {
+            view = (<OrgsyncSettingsBox/>);
+        }
         else
         {
             view = (<div></div>);
@@ -180,7 +189,7 @@ var AppSyncBox = React.createClass({
             <div>
                 <NavigationBox umbrella={this.state.umbrella} setUmbrella={this.setUmbrella} doSearch={this.doSearch}
                     userPermissions={this.state.userPermissions} showPermissionsView={this.showPermissionsView}
-                    umbrellaList={this.state.umbrellaList} showLogView={this.showLogView}/>
+                    umbrellaList={this.state.umbrellaList} showLogView={this.showLogView} showOrgsyncSettings={this.showOrgsyncSettings}/>
                 {errorBox}
                 {view}
             </div>
@@ -198,6 +207,10 @@ var NavigationBox = React.createClass({
     showLogView: function()
     {
         this.props.showLogView();
+    },
+    showOrgsyncSettings: function()
+    {
+        this.props.showOrgsyncSettings();
     },
     render: function()
     {
@@ -241,6 +254,9 @@ var NavigationBox = React.createClass({
                             </li>
                             <li>
                                 <a onClick={this.showLogView}>Change Log</a>
+                            </li>
+                            <li>
+                                <a onClick={this.showOrgsyncSettings}>Orgsync Settings</a>
                             </li>
                         </ul>
                     </li>

@@ -16,7 +16,7 @@ class LogEntry {
     protected $occurred_on;
     protected $description;
 
-    public function __construct($id, $username, $occurred_on, $description)
+    public function __construct($id, $description , $username, $occurred_on)
     {
         $this->id = $id;
         $this->username = $username;

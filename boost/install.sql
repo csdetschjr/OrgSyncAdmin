@@ -36,9 +36,12 @@ CREATE TABLE appsync_log_entry (
 CREATE SEQUENCE appsync_log_entry_seq;
 
 CREATE TABLE appsync_settings (
-    setting VARCHAR NOT NULL,
+    id INT NOT NULL,
+    setting VARCHAR NOT NULL UNIQUE,
     value VARCHAR NOT NULL,
-    PRIMARY KEY(setting)
+    PRIMARY KEY(id)
 );
+
+CREATE SEQUENCE appsync_settings_seq;
 
 COMMIT;

@@ -37,7 +37,7 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
         if(!is_numeric($input))
         {
             //Banner
-            $banner = $this->getBannerIDFromEmail($input);
+            $banner = \AppSync\UtilityFunctions::getBannerIDFromEmail($input);
             if($banner === false)
             {
                 echo json_encode(array('status' => 0));
@@ -48,7 +48,7 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
             $banner = $input;
         }
 
-        $student = $this->getStudentByBanner($banner);
+        $student = \AppSync\UtilityFunctions::getStudentByBanner($banner);
 
         if($student === false)
         {
@@ -72,41 +72,16 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
         echo json_encode($returnData);
         exit;
     }
-
-    /**
-     * Retrieves the students bannerId by using their email/username to find them
-     * in the sdr_member database.
-     * @return bannerId
-     */
-    public function getBannerIDFromEmail($email){
-        $parts = explode("@", $email);
-        $username = strtolower($parts[0]);
-        if(!empty($username)){
-            $query = "SELECT * FROM sdr_member WHERE username='$username' ORDER BY id DESC";
-            $result = pg_query($query);
-            if($result && pg_num_rows($result) > 0){
-                $row = pg_fetch_assoc($result);
-                return $row['id'];
-            }
-            else{
-                return false;
-            }
-        }
-        else{
-            return false;
-        }
-    }
-
-
+    
     /**
     * Remove an account or multiple accounts from an organization. $ids can be one id or and array of ids.
     *
     *
     */
     public function removeAccount($user_id, $org_id){
-        $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
-        $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
-        $id = $this->getIDFromUsername($user_id);
+        $key = \AppSync\UtilityFunctions::getOrgSyncKey();
+        $base_url = \AppSync\UtilityFunctions::getOrgSyncURL();
+        $id = \AppSync\UtilityFunctions::getIDFromUsername($user_id);
 
         $url = $base_url."/orgs/$org_id/accounts/remove";
         $curl = curl_init();
@@ -134,54 +109,6 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
                              \Current_User::getUsername(),
                              time());
         \AppSync\LogEntryFactory::save($logEntry);
-    }
-
-    /**
-     * Retrieves the Id for a user from orgsync
-     * @return id
-     */
-    public function getIDFromUsername($username){
-        $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
-        $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
-        $curl = curl_init();
-        curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $base_url."accounts/username/$username?key=$key"));
-        $result = curl_exec($curl);
-        curl_close($curl);
-        if($result){
-            $result = json_decode($result);
-            if(!empty($result->id))
-            return $result->id;
-        }
-        $logEntry = new \AppSync\LogEntry(null,
-                                 'Attempted to retrieve Id for portal remove from Orgsync API via getIDFromUsername function, response was ' . $result->message,
-                                 \Current_User::getUsername(),
-                                 time());
-        \AppSync\LogEntryFactory::save($logEntry);
-        return false;
-    }
-
-    /**
-     * Retrieves student objects from banner
-     * @return student
-     */
-    public function getStudentByBanner($banner)
-    {
-        $base_url = \AppSync\SettingFactory::getSetting('banner_url')->getValue();
-
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-
-        curl_setopt($curl, CURLOPT_URL, $base_url."Student");
-        $studentList = json_decode(curl_exec($curl));
-
-        foreach ($studentList as $student) {
-            if($student->{'ID'} == $banner)
-            {
-                return $student;
-            }
-        }
-
-        return false;
     }
 
 }

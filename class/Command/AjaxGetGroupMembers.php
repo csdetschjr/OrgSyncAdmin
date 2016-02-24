@@ -7,7 +7,7 @@ namespace AppSync\Command;
 * Controller class for getting the members currently in a group.
 *
 * @author Chris Detsch
-* @package intern
+* @package appsync
 */
 class AjaxGetGroupMembers {
 
@@ -52,8 +52,8 @@ class AjaxGetGroupMembers {
      */
     public function getGroupMembers($group_id)
     {
-        $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
-        $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
+        $key = \AppSync\UtilityFunctions::getOrgSyncKey();
+        $base_url = \AppSync\UtilityFunctions::getOrgSyncURL();
         $curl = curl_init();
         //get organization members by organization id
         curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $base_url."groups/$group_id/accounts?key=$key"));

@@ -6,7 +6,7 @@ namespace AppSync\Command;
 * Controller class for retrieving the permissions for the current user.
 *
 * @author Chris Detsch
-* @package intern
+* @package appsync
 */
 class AjaxGetUserPermissions {
 

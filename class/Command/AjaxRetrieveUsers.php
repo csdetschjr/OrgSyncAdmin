@@ -7,7 +7,7 @@ namespace AppSync\Command;
 * list for deities.
 *
 * @author Chris Detsch
-* @package intern
+* @package appsync
 */
 class AjaxRetrieveUsers {
 

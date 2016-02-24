@@ -6,7 +6,7 @@ namespace AppSync\Command;
 * Controller class for getting umbrella permissions based on a username.
 *
 * @author Chris Detsch
-* @package intern
+* @package appsync
 */
 class AjaxGetUmbrellaPermissions {
 

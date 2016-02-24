@@ -36,8 +36,8 @@ class AjaxUpdateOrgData extends \AppSync\Command {
 
       private function getAllOrganizations(){
           // This will need to be moved to the settings.
-          $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
-          $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
+          $key = \AppSync\UtilityFunctions::getOrgSyncKey();
+          $base_url = \AppSync\UtilityFunctions::getOrgSyncURL();
           $curl = curl_init();
           curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
           //Request list of all orginizations
