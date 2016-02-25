@@ -23,15 +23,15 @@ class AjaxSetSettings extends \AppSync\Command {
               echo json_encode('user does not have permission to set live state');
               exit;
           }
-          $newState = $_REQUEST['state'];
-          $newLiveUrl = $_REQUEST['liveUrl'];
-          $newTestUrl = $_REQUEST['testUrl'];
-          $newKey = $_REQUEST['key'];
+          $newState     = $_REQUEST['state'];
+          $newLiveUrl   = $_REQUEST['liveUrl'];
+          $newTestUrl   = $_REQUEST['testUrl'];
+          $newKey       = $_REQUEST['key'];
           $newBannerUrl = $_REQUEST['bannerUrl'];
 
           if($newLiveUrl != '')
           {
-              $liveUrlSetting = \AppSync\SettingFactory::getSetting("orgsync_live_url");
+              $liveUrlSetting = \AppSync\SettingFactory::getSetting('orgsync_live_url');
               if(!$liveUrlSetting)
               {
                   $liveUrlSetting = new \AppSync\Setting(NULL, 'orgsync_live_url', $newLiveUrl);
@@ -45,7 +45,7 @@ class AjaxSetSettings extends \AppSync\Command {
 
           if($newTestUrl != '')
           {
-              $testUrlSetting = \AppSync\SettingFactory::getSetting("orgsync_test_url");
+              $testUrlSetting = \AppSync\SettingFactory::getSetting('orgsync_test_url');
               if(!$testUrlSetting)
               {
                   $testUrlSetting = new \AppSync\Setting(NULL, 'orgsync_test_url', $newTestUrl);
@@ -59,7 +59,7 @@ class AjaxSetSettings extends \AppSync\Command {
 
           if($newKey != '')
           {
-              $keySetting = \AppSync\SettingFactory::getSetting("orgsync_key");
+              $keySetting = \AppSync\SettingFactory::getSetting('orgsync_key');
               if(!$keySetting)
               {
                   $keySetting = new \AppSync\Setting(NULL, 'orgsync_key', $newKey);
@@ -73,7 +73,7 @@ class AjaxSetSettings extends \AppSync\Command {
 
           if($newBannerUrl != '')
           {
-              $bannerUrlSetting = \AppSync\SettingFactory::getSetting("banner_url");
+              $bannerUrlSetting = \AppSync\SettingFactory::getSetting('banner_url');
               if(!$bannerUrlSetting)
               {
                   $bannerUrlSetting = new \AppSync\Setting(NULL, 'banner_url', $newBannerUrl);
@@ -99,7 +99,7 @@ class AjaxSetSettings extends \AppSync\Command {
               exit;
           }
 
-          echo json_encode(array('type' => 'success', 'message' => "Changes saved successfully."));
+          echo json_encode(array('type' => 'success', 'message' => 'Changes saved successfully.'));
           exit;
       }
 }

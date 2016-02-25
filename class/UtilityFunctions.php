@@ -24,11 +24,11 @@ class UtilityFunctions {
         }
         else
         {
-            $state = 'LIVE';
+            $state             = 'LIVE';
             $_SESSION['state'] = 'LIVE';
         }
 
-        if($state == "LIVE")
+        if($state == 'LIVE')
         {
             return \AppSync\SettingFactory::getSetting('orgsync_live_url')->getValue();
         }
@@ -54,7 +54,7 @@ class UtilityFunctions {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 
-        curl_setopt($curl, CURLOPT_URL, $base_url."Student");
+        curl_setopt($curl, CURLOPT_URL, $base_url.'Student');
         $studentList = json_decode(curl_exec($curl));
 
         foreach ($studentList as $student) {
@@ -70,10 +70,10 @@ class UtilityFunctions {
      * @return id
      */
     public static function getIDFromUsername($username){
-        $key = \AppSync\UtilityFunctions::getOrgSyncKey();
-        $base_url = \AppSync\UtilityFunctions::getOrgSyncURL();
+        $key = self->getOrgSyncKey();
+        $base_url = self::getOrgSyncURL();
         $curl = curl_init();
-        curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $base_url."accounts/username/$username?key=$key"));
+        curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $base_url.'accounts/username/$username?key=$key'));
         $result = curl_exec($curl);
         curl_close($curl);
         if($result){
@@ -97,7 +97,7 @@ class UtilityFunctions {
      * @return bannerId
      */
     public static function getBannerIDFromEmail($email){
-        $parts = explode("@", $email);
+        $parts = explode('@', $email);
         $username = strtolower($parts[0]);
         if(!empty($username)){
             $query = "SELECT * FROM sdr_member WHERE username='$username' ORDER BY id DESC";

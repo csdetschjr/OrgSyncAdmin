@@ -16,10 +16,10 @@ class AjaxLogAction extends \AppSync\Command {
 
     public function execute()
     {
-        $id = $_REQUEST['logId'];
-        $action = $_REQUEST['logAction'];
+        $id       = $_REQUEST['logId'];
+        $action   = $_REQUEST['logAction'];
         $category = $_REQUEST['logCategory'];
-        $toFrom = 'to';
+        $toFrom   = 'to';
 
         $username = \Current_User::getUsername();
 
@@ -34,7 +34,7 @@ class AjaxLogAction extends \AppSync\Command {
                              time());
         \AppSync\LogEntryFactory::save($logEntry);
 
-        echo json_encode("logged");
+        echo json_encode('logged');
         exit;
     }
 }

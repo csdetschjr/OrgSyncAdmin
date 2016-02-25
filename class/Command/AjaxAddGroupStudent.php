@@ -17,9 +17,9 @@ class AjaxAddGroupStudent extends \AppSync\Command {
 
     public function execute()
     {
-        $input = $_REQUEST['inputData'];
-        $portal = $_REQUEST['portalId'];
-        $groupId = $_REQUEST['groupId'];
+        $input    = $_REQUEST['inputData'];
+        $portal   = $_REQUEST['portalId'];
+        $groupId  = $_REQUEST['groupId'];
         $username = \Current_User::getUsername();
 
         $portalObjs = \AppSync\PortalFactory::getPortalById($portal);

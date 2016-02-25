@@ -18,8 +18,8 @@ class LogEntry {
 
     public function __construct($id, $description , $username, $occurred_on)
     {
-        $this->id = $id;
-        $this->username = $username;
+        $this->id          = $id;
+        $this->username    = $username;
         $this->occurred_on = $occurred_on;
         $this->description = $description;
     }

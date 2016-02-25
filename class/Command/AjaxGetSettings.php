@@ -23,16 +23,15 @@ class AjaxGetSettings extends \AppSync\Command {
               echo json_encode('user does not have permission to retrieve live state');
               exit;
           }
-          $liveUrl = '';
-          $testUrl = '';
-          $key = '';
-          $state = '';
+          $liveUrl   = '';
+          $testUrl   = '';
+          $key       = '';
           $bannerUrl = '';
 
-          $liveUrlSetting = \AppSync\SettingFactory::getSetting("orgsync_live_url");
-          $testUrlSetting = \AppSync\SettingFactory::getSetting("orgsync_test_url");
-          $keySetting = \AppSync\SettingFactory::getSetting("orgsync_key");
-          $bannerUrlSetting = \AppSync\SettingFactory::getSetting("banner_url");
+          $liveUrlSetting   = \AppSync\SettingFactory::getSetting('orgsync_live_url');
+          $testUrlSetting   = \AppSync\SettingFactory::getSetting('orgsync_test_url');
+          $keySetting       = \AppSync\SettingFactory::getSetting('orgsync_key');
+          $bannerUrlSetting = \AppSync\SettingFactory::getSetting('banner_url');
 
 
           if($liveUrlSetting)
@@ -58,11 +57,11 @@ class AjaxGetSettings extends \AppSync\Command {
           }
           else
           {
-              $state = 'LIVE';
+              $state             = 'LIVE';
               $_SESSION['state'] = 'LIVE';
           }
 
-          echo json_encode(array("state" => $state, 'liveUrl' => $liveUrl, 'testUrl' => $testUrl,
+          echo json_encode(array('state' => $state, 'liveUrl' => $liveUrl, 'testUrl' => $testUrl,
                                     'key' => $key, 'bannerUrl' => $bannerUrl));
           exit;
       }

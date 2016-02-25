@@ -20,8 +20,8 @@ class AjaxAddPortalStudent extends \AppSync\Command {
     public function execute()
     {
 
-        $input = $_REQUEST['inputData'];
-        $portal = $_REQUEST['portalId'];
+        $input    = $_REQUEST['inputData'];
+        $portal   = $_REQUEST['portalId'];
         $username = \Current_User::getUsername();
 
         $portalObjs = \AppSync\PortalFactory::getPortalById($portal);
@@ -73,7 +73,7 @@ class AjaxAddPortalStudent extends \AppSync\Command {
         echo json_encode($returnData);
         exit;
     }
-    
+
     /**
     * Place a user or users into a portal. User can be a single user id or and array of ids
     *
@@ -81,9 +81,9 @@ class AjaxAddPortalStudent extends \AppSync\Command {
     * @return boolean (success or not)
     */
     public function userToOrg($user_id, $org_id){
-        $key = \AppSync\UtilityFunctions::getOrgSyncKey();
+        $key      = \AppSync\UtilityFunctions::getOrgSyncKey();
         $base_url = \AppSync\UtilityFunctions::getOrgSyncURL();
-        $id = \AppSync\UtilityFunctions::getIDFromUsername($user_id);
+        $id       = \AppSync\UtilityFunctions::getIDFromUsername($user_id);
         if(!$id)
         {
             return $id;

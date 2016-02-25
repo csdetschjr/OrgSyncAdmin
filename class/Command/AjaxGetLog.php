@@ -24,9 +24,9 @@ class AjaxGetLog extends \AppSync\Command {
 
         foreach ($logs as $logEntry)
         {
-            $row = array("occurredOn" => date('m/d/Y h:m:s a', $logEntry->getOccurredOn()),
-                         "username" => $logEntry->getUsername(),
-                         "desc" => $logEntry->getDescription());
+            $row = array('occurredOn' => date('m/d/Y h:m:s a', $logEntry->getOccurredOn()),
+                         'username'   => $logEntry->getUsername(),
+                         'desc'       => $logEntry->getDescription());
             $response[] = $row;
         }
 

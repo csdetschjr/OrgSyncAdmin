@@ -17,9 +17,9 @@ class Setting {
 
     public function __construct($id, $setting, $value)
     {
-        $this->id = $id;
+        $this->id      = $id;
         $this->setting = $setting;
-        $this->value = $value;
+        $this->value   = $value;
     }
 
     /**

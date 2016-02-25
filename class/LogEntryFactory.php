@@ -15,13 +15,17 @@ use \Database;
 
 class LogEntryFactory {
 
+    /**
+     * Retrieves an ordered array of Log Entries.
+     * @return array of LogEntryRestored
+     */
     public static function getOrderedLogEntries()
     {
-        $db = PdoFactory::getPdoInstance();
+        $db    = PdoFactory::getPdoInstance();
 
         $query = 'SELECT * FROM appsync_log_entry ORDER BY occurred_on DESC';
 
-        $stmt = $db->prepare($query);
+        $stmt  = $db->prepare($query);
 
         $stmt->execute();
         $stmt->setFetchMode(\PDO::FETCH_CLASS, 'AppSync\LogEntryRestored');
@@ -35,14 +39,14 @@ class LogEntryFactory {
      */
     public static function getLogEntriesByUsername($username)
     {
-        $db = PdoFactory::getPdoInstance();
+        $db     = PdoFactory::getPdoInstance();
 
-        $query = 'SELECT * FROM appsync_log_entry WHERE username = :username';
+        $query  = 'SELECT * FROM appsync_log_entry WHERE username = :username';
 
         $params = array(
             'username' => $username
         );
-        $stmt = $db->prepare($query);
+        $stmt   = $db->prepare($query);
 
         $stmt->execute($params);
         $stmt->setFetchMode(\PDO::FETCH_CLASS, 'AppSync\LogEntryRestored');
@@ -56,14 +60,14 @@ class LogEntryFactory {
      */
     public static function getLogEntryById($id)
     {
-        $db = PdoFactory::getPdoInstance();
+        $db     = PdoFactory::getPdoInstance();
 
-        $query = 'SELECT * FROM appsync_log_entry WHERE id = :id';
+        $query  = 'SELECT * FROM appsync_log_entry WHERE id = :id';
 
         $params = array(
             'id' => $id
         );
-        $stmt = $db->prepare($query);
+        $stmt   = $db->prepare($query);
 
         $stmt->execute($params);
         $stmt->setFetchMode(\PDO::FETCH_CLASS, 'AppSync\LogEntryRestored');
@@ -78,27 +82,24 @@ class LogEntryFactory {
     public static function save($logEntry)
     {
         $db = PdoFactory::getPdoInstance();
-
         $id = $logEntry->getId();
 
         if (isset($id)) {
-            $query = "UPDATE appsync_log_entry SET (description, username, occurred_on) = (:description, :username, :occurredOn) WHERE id = :id";
-
+            $query  = 'UPDATE appsync_log_entry SET (description, username, occurred_on) = (:description, :username, :occurredOn) WHERE id = :id';
             $params = array(
                 'id' => $id,
                 'description' => $logEntry->getDescription(),
-                'username' => $logEntry->getUsername(),
-                'occurredOn' => $logEntry->getOccurredOn()
+                'username'    => $logEntry->getUsername(),
+                'occurredOn'  => $logEntry->getOccurredOn()
             );
 
         }else{
             // Insert
-            $query = "INSERT INTO appsync_log_entry (id, description, username, occurred_on) VALUES (nextval('appsync_log_entry_seq'), :description, :username, :occurredOn)";
-
+            $query  = "INSERT INTO appsync_log_entry (id, description, username, occurred_on) VALUES (nextval('appsync_log_entry_seq'), :description, :username, :occurredOn)";
             $params = array(
                 'description' => $logEntry->getDescription(),
-                'username' => $logEntry->getUsername(),
-                'occurredOn' => $logEntry->getOccurredOn()
+                'username'    => $logEntry->getUsername(),
+                'occurredOn'  => $logEntry->getOccurredOn()
             );
         }
 

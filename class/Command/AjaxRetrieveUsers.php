@@ -20,14 +20,14 @@ class AjaxRetrieveUsers {
     {
         if(!(\Current_User::isDeity()))
         {
-            echo json_encode("user does not have permission to retrieve other user information");
+            echo json_encode('user does not have permission to retrieve other user information');
             exit;
         }
 
         $permissions = \AppSync\UmbrellaAdminFactory::getAllUmbrellaAdmins();
 
 
-        $userList = array();
+        $userList   = array();
         $returnData = array();
 
         foreach($permissions as $permission)
@@ -42,7 +42,7 @@ class AjaxRetrieveUsers {
 
         foreach($userList as $user)
         {
-            $node = array('username' => $user);
+            $node         = array('username' => $user);
             $returnData[] = $node;
         }
 

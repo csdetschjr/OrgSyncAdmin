@@ -20,11 +20,11 @@ class SettingFactory {
      */
     public static function getSetting($settingName)
     {
-        $db = PdoFactory::getPdoInstance();
+        $db     = PdoFactory::getPdoInstance();
 
-        $query = "SELECT * FROM appsync_settings WHERE setting = :setting";
+        $query  = "SELECT * FROM appsync_settings WHERE setting = :setting";
 
-        $stmt = $db->prepare($query);
+        $stmt   = $db->prepare($query);
 
         $params = array('setting' => $settingName);
 
@@ -45,7 +45,7 @@ class SettingFactory {
         $id = $setting->getId();
 
         if (isset($id)) {
-            $query = "UPDATE appsync_settings SET value = :value WHERE id = :id";
+            $query  = 'UPDATE appsync_settings SET value = :value WHERE id = :id';
 
             $params = array(
                 'id' => $id,
@@ -54,7 +54,7 @@ class SettingFactory {
 
         }else{
             // Insert
-            $query = "INSERT INTO appsync_settings (id, setting, value) VALUES (nextval('appsync_settings_seq'), :setting, :value)";
+            $query  = "INSERT INTO appsync_settings (id, setting, value) VALUES (nextval('appsync_settings_seq'), :setting, :value)";
 
             $params = array(
                 'setting' => $setting->getSetting(),
