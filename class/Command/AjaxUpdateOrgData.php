@@ -16,6 +16,10 @@ class AjaxUpdateOrgData extends \AppSync\Command {
           return array('action'=>'AjaxGetUmbrellaList');
       }
 
+      /**
+       * The main function for executing the command.
+       * This command is currently turned off as it will probably be put into scheduled action in the future.
+       */
       public function execute()
       {
 
@@ -35,20 +39,23 @@ class AjaxUpdateOrgData extends \AppSync\Command {
       }
 
       private function getAllOrganizations(){
-          // This will need to be moved to the settings.
+          // Use the UtilityFunctions to retrieve the info to be passed to the API
           $key = \AppSync\UtilityFunctions::getOrgSyncKey();
           $base_url = \AppSync\UtilityFunctions::getOrgSyncURL();
+          // Initialize curl
           $curl = curl_init();
           curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
           //Request list of all orginizations
           curl_setopt($curl, CURLOPT_URL, $base_url."orgs?key=$key");
+          // Execute the curl request and store the result
           $all_org = curl_exec($curl);
-
+          // Check to make sure the result was valid
           if($all_org){
               $all_org = json_decode($all_org);
           }else{
               $all_org = FALSE;
           }
+          // Close curl
           curl_close($curl);
           return $all_org;
       }

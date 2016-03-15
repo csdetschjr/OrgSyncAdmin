@@ -17,23 +17,30 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
         return array('action'=>'AjaxRemovePortalStudent');
     }
 
+    /**
+     * The main function for executing the command.
+     */
     public function execute()
     {
-        $input = $_REQUEST['inputData'];
+        // Retrieve the values from the request
+        $input  = $_REQUEST['inputData'];
         $portal = $_REQUEST['portalId'];
-        $username = \Current_User::getUsername();
 
+        // Retrieve other important values and objects
+        $username = \Current_User::getUsername();
         $portalObjs = \AppSync\PortalFactory::getPortalById($portal);
         $umbrellaId = $portalObjs[0]->getUmbrellaId();
-
         $permissions = \AppSync\UmbrellaAdminFactory::getUmbrellaAdmin($username, $umbrellaId);
 
+        // If the permissions array is empty then the user does not have permission to use this command
+        // throw an error back to the front end.
         if(sizeof($permissions) == 0)
         {
             echo json_encode(array('status' => 0, 'message' => 'You do not have permission to add students to this group.'));
             exit;
         }
 
+        // If the input is not a number then it must be a username, retrieve the banner
         if(!is_numeric($input))
         {
             //Banner
@@ -48,8 +55,9 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
             $banner = $input;
         }
 
+        // Retrieve the student and make sure it is not null, passing an error
+        // back to the front end if it is
         $student = \AppSync\UtilityFunctions::getStudentByBanner($banner);
-
         if($student === false)
         {
             $returnData = array('status' => 0);
@@ -57,8 +65,11 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
             exit;
         }
 
+        // Pass the student info and group id to the function responsible for interacting
+        // with the OrgSync API
         $status = $this->removeAccount($student->{'emailAddress'}, $portal);
 
+        // Create the response to the front end
         $name = $student->{'firstName'} . ' ' . $student->{'lastName'};
         if($status)
         {
@@ -69,25 +80,31 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
             $returnData = array('status' => 2, 'name' => $name);
         }
 
+        // Echo the values back to the front end after encoding them.
         echo json_encode($returnData);
         exit;
     }
-    
+
     /**
     * Remove an account or multiple accounts from an organization. $ids can be one id or and array of ids.
     *
     *
     */
     public function removeAccount($user_id, $org_id){
+        // Use the UtilityFunctions to retrieve the info to be passed to the API
         $key = \AppSync\UtilityFunctions::getOrgSyncKey();
         $base_url = \AppSync\UtilityFunctions::getOrgSyncURL();
         $id = \AppSync\UtilityFunctions::getIDFromUsername($user_id);
-
+        // Create the url
         $url = $base_url."/orgs/$org_id/accounts/remove";
+        // Initialize curl
         $curl = curl_init();
         curl_setopt_array($curl, array(CURLOPT_TIMEOUT => 900, CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $url, CURLOPT_POST => 1, CURLOPT_POSTFIELDS => "ids=$id&key=$key"));
+        // Execute the curl request and store the result
         $result = curl_exec($curl);
+        // Close curl
         curl_close($curl);
+        // Check to make sure the result was valid
         if($result){
             $result = json_decode($result);
             if(is_object($result) && $result->success == "true")
@@ -96,6 +113,7 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
             }
             else
             {
+                // Log that an attempt to interact with the API failed
                 $logEntry = new \AppSync\LogEntry(null,
                                      'Attempted to remove user from portal in Orgsync API via removeAccount function, response was ' . $result->message,
                                      \Current_User::getUsername(),
@@ -104,6 +122,7 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
                 return FALSE;
             }
         }
+        // Log that an attempt to interact with the API failed
         $logEntry = new \AppSync\LogEntry(null,
                              'Attempted to from user from portal in Orgsync API via removeAccount function, response was ' . $result->message,
                              \Current_User::getUsername(),

@@ -20,20 +20,27 @@ class GetSearchSuggestions {
 
     }
 
+    /**
+     * The main function for executing the command.
+     */
     public function execute()
     {
-
+        // Retrieve the values from the request
         $umbrellaId = $_REQUEST['umbrellaId'];
-        $username = \Current_User::getUsername();
 
+        // Retrieve other important values and objects
+        $username    = \Current_User::getUsername();
         $permissions = \AppSync\UmbrellaAdminFactory::getUmbrellaAdmin($username, $umbrellaId);
 
+        // If the permissions array is empty then the user does not have permission to use this command
+        // throw an error back to the front end.
         if(sizeof($permissions) == 0)
         {
             echo '<div style="display: none;">User does not have permission to access this data.</div>';
             exit;
         }
 
+        // Attempt to retrieve the portals and do a fuzzy search of them for the searchString
         try
         {
             $portals = \AppSync\PortalFactory::getPortals();

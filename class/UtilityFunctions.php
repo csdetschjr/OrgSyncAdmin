@@ -5,7 +5,7 @@ namespace AppSync;
 use \Database;
 
 /**
- * A class for all the static utility functions.
+ * A class for all the static utility functions that are used in multiple classes.
  *
  * @author Chris Detsch
  * @package appsync
@@ -15,10 +15,15 @@ use \Database;
 
 class UtilityFunctions {
 
-
+    /**
+     * Retrieves the OrgSync URL from the database, if the state is not set it
+     * will set it to LIVE and use that as the state, otherwise it will use the
+     * current state.
+     * @return string - the url
+     */
     public static function getOrgSyncURL()
     {
-        if($_SESSION['state'] != null)
+        if(isset($_SESSION['state']))
         {
             $state = $_SESSION['state'];
         }
@@ -38,6 +43,10 @@ class UtilityFunctions {
         }
     }
 
+    /**
+     * Retrieves the OrgSync Key from the database.
+     * @return string - the key
+     */
     public static function getOrgSyncKey()
     {
         return \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
@@ -49,14 +58,17 @@ class UtilityFunctions {
      */
     public static function getStudentByBanner($banner)
     {
+        // Retrieve the url for Banner from the database
         $base_url = \AppSync\SettingFactory::getSetting('banner_url')->getValue();
 
+        // Initialize curl
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-
         curl_setopt($curl, CURLOPT_URL, $base_url.'Student');
+        // Execute the curl request and store its result
         $studentList = json_decode(curl_exec($curl));
 
+        // Loop through the student list and retrieve the student with the given banner id
         foreach ($studentList as $student) {
             if($student->{'ID'} == $banner)
             {
@@ -70,12 +82,17 @@ class UtilityFunctions {
      * @return id
      */
     public static function getIDFromUsername($username){
-        $key = self->getOrgSyncKey();
+        // Retrieve the orgsync url values using the static functions in this class
+        $key = self::getOrgSyncKey();
         $base_url = self::getOrgSyncURL();
+        // Initialize curl
         $curl = curl_init();
         curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $base_url.'accounts/username/$username?key=$key'));
+        // Execute the curl request and store its result
         $result = curl_exec($curl);
+        // Close curl
         curl_close($curl);
+        // Check to see if the result is valid
         if($result){
             $result = json_decode($result);
             if(!empty($result->id))
@@ -83,6 +100,7 @@ class UtilityFunctions {
                 return $result->id;
             }
         }
+        // Log that an attempt to interact with the API failed
         $logEntry = new \AppSync\LogEntry(null,
                                  'Attempted to retrieve Id from Orgsync API via getIDFromUsername function, response was ' . $result->message,
                                  \Current_User::getUsername(),
