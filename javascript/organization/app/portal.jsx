@@ -149,6 +149,14 @@ var PortalViewBox = React.createClass({
     // the ajax request to add the student to the group/portal.
     processAdd: function(addData)
     {
+        if(this.state.groupId == -1)
+        {
+            this.recordLogEntry('portal', 'Adding', this.props.portal.id);
+        }
+        else
+        {
+            this.recordLogEntry('group', 'Adding', this.state.groupId);
+        }
         var i;
         for(i = 0; i < addData.length; i++)
         {
@@ -166,6 +174,14 @@ var PortalViewBox = React.createClass({
     // the ajax request to remove the student from the group/portal.
     processRemove: function(removeData)
     {
+        if(this.state.groupId == -1)
+        {
+            this.recordLogEntry('portal', 'Removing', this.props.portal.id);
+        }
+        else
+        {
+            this.recordLogEntry('group', 'Removing', this.state.groupId);
+        }
         var i;
         for(i = 0; i < removeData.length; i++)
         {
@@ -301,6 +317,24 @@ var PortalViewBox = React.createClass({
                 var outputData = this.state.outputListData;
                 outputData[index] = JSON.parse(data);
                 this.setState({outputListData: outputData});
+            }.bind(this),
+            error: function(xhr, status, err)
+            {
+                //TODO create error handler
+            }.bind(this)
+        });
+    },
+    // Record a add or remove by a user.
+    recordLogEntry: function(category, action, id)
+    {
+        var inputData = {logCategory: category, logAction: action, logId: id};
+        $.ajax({
+            url: 'index.php?module=appsync&action=AjaxLogAction',
+            type: 'POST',
+            data: inputData,
+            success: function()
+            {
+
             }.bind(this),
             error: function(xhr, status, err)
             {

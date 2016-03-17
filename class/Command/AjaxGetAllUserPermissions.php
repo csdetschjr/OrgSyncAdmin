@@ -7,7 +7,7 @@ namespace AppSync\Command;
 * list for deities.
 *
 * @author Chris Detsch
-* @package intern
+* @package appsync
 */
 class AjaxGetAllUserPermissions {
 
@@ -20,7 +20,7 @@ class AjaxGetAllUserPermissions {
     {
         if(!(\Current_User::isDeity()))
         {
-            echo json_encode("user does not have permission to change permissions");
+            echo json_encode('user does not have permission to retrieve permissions');
             exit;
         }
 
@@ -55,11 +55,11 @@ class AjaxGetAllUserPermissions {
                         $first = false;
                     }
                     else {
-                        $permissionList .= ", " . $umbrella->getName();
+                        $permissionList .= ', ' . $umbrella->getName();
                     }
                 }
             }
-            $node = array("username" => $username, "permissions" => $permissionList);
+            $node = array('username' => $username, 'permissions' => $permissionList);
             array_push($returnData, $node);
         }
 

@@ -25,25 +25,23 @@ CREATE TABLE appsync_portal (
     PRIMARY KEY(orgsync_id)
 );
 
-CREATE TABLE appsync_event (
-    id INT NOT NULL,
-    description VARCHAR NOT NULL,
-    PRIMARY KEY(id)
-);
-
 CREATE TABLE appsync_log_entry (
     id INT NOT NULL,
-    type INT NOT NULL REFERENCES appsync_event(id),
-    description VARCHAR NOT NULL,
+    description VARCHAR,
     username VARCHAR NOT NULL,
     occurred_on INT NOT NULL,
     PRIMARY KEY(id)
 );
 
+CREATE SEQUENCE appsync_log_entry_seq;
+
 CREATE TABLE appsync_settings (
-    setting VARCHAR NOT NULL,
+    id INT NOT NULL,
+    setting VARCHAR NOT NULL UNIQUE,
     value VARCHAR NOT NULL,
-    PRIMARY KEY(setting)
+    PRIMARY KEY(id)
 );
+
+CREATE SEQUENCE appsync_settings_seq;
 
 COMMIT;

@@ -6,7 +6,7 @@ namespace AppSync\Command;
 * Controller class for adding permissions to the site for particular users.
 *
 * @author Chris Detsch
-* @package intern
+* @package appsync
 */
 class AjaxAddPermission {
 

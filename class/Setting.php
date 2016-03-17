@@ -11,13 +11,32 @@ namespace AppSync;
  */
 
 class Setting {
+    protected $id;
     protected $setting;
     protected $value;
 
-    public function __construct($setting, $value)
+    public function __construct($id, $setting, $value)
     {
+        $this->id      = $id;
         $this->setting = $setting;
-        $this->value = $value;
+        $this->value   = $value;
+    }
+
+    /**
+     * Returns the id field
+     * @return id
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Sets the id field for this class.
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 
     /**

@@ -14,14 +14,14 @@ namespace AppSync\Command;
 class AjaxAddPortalStudent extends \AppSync\Command {
 
     public function getRequestVars(){
-        return array('action'=>'AjaxAddStudent');
+        return array('action'=>'AjaxAddPortalStudent');
     }
 
     public function execute()
     {
 
-        $input = $_REQUEST['inputData'];
-        $portal = $_REQUEST['portalId'];
+        $input    = $_REQUEST['inputData'];
+        $portal   = $_REQUEST['portalId'];
         $username = \Current_User::getUsername();
 
         $portalObjs = \AppSync\PortalFactory::getPortalById($portal);
@@ -38,7 +38,7 @@ class AjaxAddPortalStudent extends \AppSync\Command {
         if(!is_numeric($input))
         {
             //Banner
-            $banner = $this->getBannerIDFromEmail($input);
+            $banner = \AppSync\UtilityFunctions::getBannerIDFromEmail($input);
             if($banner === false)
             {
                 echo json_encode(array('status' => 0, 'message' => 'Email/Username was invalid'));
@@ -49,7 +49,7 @@ class AjaxAddPortalStudent extends \AppSync\Command {
             $banner = $input;
         }
 
-        $student =$this->getStudentByBanner($banner);
+        $student = \AppSync\UtilityFunctions::getStudentByBanner($banner);
 
         if($student == null)
         {
@@ -75,39 +75,19 @@ class AjaxAddPortalStudent extends \AppSync\Command {
     }
 
     /**
-     * Retrieves the students bannerId by using their email/username to find them
-     * in the sdr_member database.
-     * @return bannerId
-     */
-    public function getBannerIDFromEmail($email){
-        $parts = explode("@", $email);
-        $username = strtolower($parts[0]);
-        if(!empty($username)){
-            $query = "SELECT * FROM sdr_member WHERE username='$username' ORDER BY id DESC";
-            $result = pg_query($query);
-            if($result && pg_num_rows($result) > 0){
-                $row = pg_fetch_assoc($result);
-                return $row['id'];
-            }
-            else{
-                return false;
-            }
-        }
-        else{
-            return false;
-        }
-    }
-
-    /**
     * Place a user or users into a portal. User can be a single user id or and array of ids
     *
     * @param int $user_id (can be array of user id's), int $group_id (groups id)
     * @return boolean (success or not)
     */
     public function userToOrg($user_id, $org_id){
-        $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
-        $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
-        $id = $this->getIDFromUsername($user_id);
+        $key      = \AppSync\UtilityFunctions::getOrgSyncKey();
+        $base_url = \AppSync\UtilityFunctions::getOrgSyncURL();
+        $id       = \AppSync\UtilityFunctions::getIDFromUsername($user_id);
+        if(!$id)
+        {
+            return $id;
+        }
         $import_url = '';
         $import_url = $base_url."orgs/$org_id/accounts/add";
         $curl = curl_init();
@@ -117,52 +97,25 @@ class AjaxAddPortalStudent extends \AppSync\Command {
         if($result){
             $result = json_decode($result);
             if(is_object($result) && $result->success == "true")
-            return TRUE;
-            else
-            return FALSE;
-        }else{
-            return FALSE;
-        }
-    }
-
-    /**
-     * Retrieves the Id for a user from orgsync
-     * @return id
-     */
-    public function getIDFromUsername($username){
-        $key = \AppSync\SettingFactory::getSetting('orgsync_key')->getValue();
-        $base_url = \AppSync\SettingFactory::getSetting('orgsync_url')->getValue();
-        $curl = curl_init();
-        curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $base_url."accounts/username/$username?key=$key"));
-        $result = curl_exec($curl);
-        curl_close($curl);
-        if($result){
-            $result = json_decode($result);
-            if(!empty($result->id))
-            return $result->id;
-        }
-        return false;
-    }
-
-    /**
-     * Retrieves student objects from banner
-     * @return student
-     */
-    public function getStudentByBanner($banner)
-    {
-        $base_url = \AppSync\SettingFactory::getSetting('banner_url')->getValue();
-
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-
-        curl_setopt($curl, CURLOPT_URL, $base_url."Student");
-        $studentList = json_decode(curl_exec($curl));
-
-        foreach ($studentList as $student) {
-            if($student->{'ID'} == $banner)
             {
-                return $student;
+                return TRUE;
             }
+            else
+            {
+                $logEntry = new \AppSync\LogEntry(null,
+                                     'Attempted to add user to portal in Orgsync API via userToOrg function, response was ' . $result->message,
+                                     \Current_User::getUsername(),
+                                     time());
+                \AppSync\LogEntryFactory::save($logEntry);
+                return FALSE;
+            }
+        }else{
+            $logEntry = new \AppSync\LogEntry(null,
+                                 'Attempted to add user to portal in Orgsync API via userToOrg function, response was ' . $result->message,
+                                 \Current_User::getUsername(),
+                                 time());
+            \AppSync\LogEntryFactory::save($logEntry);
+            return FALSE;
         }
     }
 

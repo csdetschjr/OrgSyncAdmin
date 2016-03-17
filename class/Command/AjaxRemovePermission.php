@@ -6,7 +6,7 @@ namespace AppSync\Command;
 * Controller class for removing a permission from the given user.
 *
 * @author Chris Detsch
-* @package intern
+* @package appsync
 */
 class AjaxRemovePermission {
 
