@@ -46,7 +46,7 @@ class GetSearchSuggestions {
             $portals = \AppSync\PortalFactory::getPortals();
 
             $searchString = $_REQUEST['searchString'];
-            $umbrella = $_REQUEST['umbrellaId'];
+            $umbrella     = $_REQUEST['umbrellaId'];
 
             $portList = $this->portalFuzzySearch($searchString, $umbrella, $portals);
             echo $this->encodePortals($portList);
@@ -85,7 +85,7 @@ class GetSearchSuggestions {
         $i = 0;
         foreach($portals as $portal) {
             $portalsEncoded[$i]['name'] = $portal->getName();
-            $portalsEncoded[$i]['id'] = $portal->getOrgSyncId();
+            $portalsEncoded[$i]['id']   = $portal->getOrgSyncId();
             $i++;
         }
 

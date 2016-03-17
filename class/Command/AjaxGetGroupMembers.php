@@ -15,7 +15,7 @@ class AjaxGetGroupMembers {
     {
 
     }
-    
+
     /**
      * The main function for executing the command.
      */
@@ -25,9 +25,9 @@ class AjaxGetGroupMembers {
         $portal = $_REQUEST['portalId'];
 
         // Retrieve other important values and objects
-        $username   = \Current_User::getUsername();
-        $portalObjs = \AppSync\PortalFactory::getPortalById($portal);
-        $umbrellaId = $portalObjs[0]->getUmbrellaId();
+        $username    = \Current_User::getUsername();
+        $portalObjs  = \AppSync\PortalFactory::getPortalById($portal);
+        $umbrellaId  = $portalObjs[0]->getUmbrellaId();
         $permissions = \AppSync\UmbrellaAdminFactory::getUmbrellaAdmin($username, $umbrellaId);
 
         // If the permissions array is empty then the user does not have permission to use this command
@@ -62,17 +62,24 @@ class AjaxGetGroupMembers {
         // Use the UtilityFunctions to retrieve the info to be passed to the API
         $key      = \AppSync\UtilityFunctions::getOrgSyncKey();
         $base_url = \AppSync\UtilityFunctions::getOrgSyncURL();
+
         // Initialize the curl request
         $curl = curl_init();
         curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $base_url."groups/$group_id/accounts?key=$key"));
+
         // Execute the curl request and store the result
         $group_members = curl_exec($curl);
+
         // Check to make sure the result was valid
-        if($group_members){
+        if($group_members)
+        {
             $group_members = json_decode($group_members);
-        }else{
+        }
+        else
+        {
             $group_members = FALSE;
         }
+
         // Close curl
         curl_close($curl);
         return $group_members;

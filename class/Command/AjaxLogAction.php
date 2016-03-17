@@ -23,8 +23,10 @@ class AjaxLogAction extends \AppSync\Command {
         $id       = $_REQUEST['logId'];
         $action   = $_REQUEST['logAction'];
         $category = $_REQUEST['logCategory'];
+
         // Set the variable to 'to' initially
         $toFrom   = 'to';
+        
         // Retrieve the username
         $username = \Current_User::getUsername();
 

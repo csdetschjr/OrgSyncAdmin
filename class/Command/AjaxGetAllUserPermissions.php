@@ -30,7 +30,7 @@ class AjaxGetAllUserPermissions {
         $permissions = \AppSync\UmbrellaAdminFactory::getAllUmbrellaAdmins();
 
 
-        $userList = array();
+        $userList   = array();
         $returnData = array();
 
         // For each permission if the username is not in the userList array add them

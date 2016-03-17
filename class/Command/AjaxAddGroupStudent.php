@@ -44,6 +44,7 @@ class AjaxAddGroupStudent extends \AppSync\Command {
         {
             //Banner
             $banner = \AppSync\UtilityFunctions::getBannerIDFromEmail($input);
+
             // If false is returned then the username was not valid.
             if($banner === false)
             {
@@ -51,7 +52,8 @@ class AjaxAddGroupStudent extends \AppSync\Command {
                 exit;
             }
         }
-        else {
+        else
+        {
             $banner = $input;
         }
 
@@ -95,15 +97,20 @@ class AjaxAddGroupStudent extends \AppSync\Command {
         $key      = \AppSync\UtilityFunctions::getOrgSyncKey();
         $base_url = \AppSync\UtilityFunctions::getOrgSyncURL();
         $id       = \AppSync\UtilityFunctions::getIDFromUsername($user_id);
+
         // Create the url
         $import_url = $base_url."groups/$group_id/accounts/add";
+
         // Initialize curl
         $curl = curl_init();
         curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $import_url, CURLOPT_POST => 1, CURLOPT_POSTFIELDS => "ids=$id&key=$key"));
+
         // Execute the curl request and store the result
         $result = curl_exec($curl);
+
         // Close curl
         curl_close($curl);
+
         // Check to make sure the result was valid
         if($result)
         {

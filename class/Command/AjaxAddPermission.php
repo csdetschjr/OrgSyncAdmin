@@ -35,7 +35,7 @@ class AjaxAddPermission {
         // Retrieve the permissions from the database
         $permissions = \AppSync\UmbrellaAdminFactory::getUmbrellaAdmin($username, $umbrellaId);
 
-        // If they already have permission to the umbrella given then do nothing otherwise
+        // If they already have permission to the given umbrella, then do nothing, otherwise
         // add the permission to their account.
         if(sizeof($permissions) == 0)
         {

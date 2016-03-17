@@ -29,7 +29,7 @@ class AjaxRemovePermission {
         }
 
         // Retrieve the input values from the request
-        $username = $_REQUEST['username'];
+        $username   = $_REQUEST['username'];
         $umbrellaId = $_REQUEST['umbrella'];
 
         // Remove the permission from the database

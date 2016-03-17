@@ -32,12 +32,13 @@ class AjaxGetAllUmbrellas extends \AppSync\Command {
 
         // Retrieve the umbrellas
         $umbrellasResult = \AppSync\UmbrellaFactory::getUmbrellas();
-        $umbrellas = array();
-        $i = 0;
+        $umbrellas       = array();
+        $i               = 0;
+        
         // For each umbrella add it to the umbrellas array as an id and a name
         foreach($umbrellasResult as $umbrella)
         {
-            $umbrellas[$i]['umbrella_id'] = $umbrella->getOrgSyncId();
+            $umbrellas[$i]['umbrella_id']   = $umbrella->getOrgSyncId();
             $umbrellas[$i]['umbrella_name'] = $umbrella->getName();
             $i++;
         }

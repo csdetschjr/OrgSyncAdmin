@@ -21,11 +21,8 @@ class SettingFactory {
     public static function getSetting($settingName)
     {
         $db     = PdoFactory::getPdoInstance();
-
         $query  = "SELECT * FROM appsync_settings WHERE setting = :setting";
-
         $stmt   = $db->prepare($query);
-
         $params = array('setting' => $settingName);
 
         $stmt->execute($params);
@@ -41,7 +38,6 @@ class SettingFactory {
     public static function save($setting)
     {
         $db = PdoFactory::getPdoInstance();
-
         $id = $setting->getId();
 
         if (isset($id)) {

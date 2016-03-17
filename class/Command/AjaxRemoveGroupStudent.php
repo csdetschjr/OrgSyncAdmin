@@ -23,14 +23,14 @@ class AjaxRemoveGroupStudent extends \AppSync\Command {
     public function execute()
     {
         // Retrieve the values from the request
-        $input = $_REQUEST['inputData'];
-        $portal = $_REQUEST['portalId'];
+        $input   = $_REQUEST['inputData'];
+        $portal  = $_REQUEST['portalId'];
         $groupId = $_REQUEST['groupId'];
 
         // Retrieve other important values and objects
-        $username = \Current_User::getUsername();
-        $portalObjs = \AppSync\PortalFactory::getPortalById($portal);
-        $umbrellaId = $portalObjs[0]->getUmbrellaId();
+        $username    = \Current_User::getUsername();
+        $portalObjs  = \AppSync\PortalFactory::getPortalById($portal);
+        $umbrellaId  = $portalObjs[0]->getUmbrellaId();
         $permissions = \AppSync\UmbrellaAdminFactory::getUmbrellaAdmin($username, $umbrellaId);
 
         // If the permissions array is empty then the user does not have permission to use this command
@@ -97,15 +97,20 @@ class AjaxRemoveGroupStudent extends \AppSync\Command {
         $key = \AppSync\UtilityFunctions::getOrgSyncKey();
         $base_url = \AppSync\UtilityFunctions::getOrgSyncURL();
         $id = \AppSync\UtilityFunctions::getIDFromUsername($user_id);
+
         // Create the url
         $import_url = $base_url."groups/$group_id/accounts/remove";
+
         // Initialize curl
         $curl = curl_init();
         curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $import_url, CURLOPT_POST => 1, CURLOPT_POSTFIELDS => "ids=$id&key=$key"));
+
         // Execute the curl request and store the result
         $result = curl_exec($curl);
+
         // Close curl
         curl_close($curl);
+
         // Check to make sure the result was valid
         if($result){
             $result = json_decode($result);

@@ -22,9 +22,7 @@ class LogEntryFactory {
     public static function getOrderedLogEntries()
     {
         $db    = PdoFactory::getPdoInstance();
-
         $query = 'SELECT * FROM appsync_log_entry ORDER BY occurred_on DESC';
-
         $stmt  = $db->prepare($query);
 
         $stmt->execute();
@@ -40,13 +38,13 @@ class LogEntryFactory {
     public static function getLogEntriesByUsername($username)
     {
         $db     = PdoFactory::getPdoInstance();
-
         $query  = 'SELECT * FROM appsync_log_entry WHERE username = :username';
+        $stmt   = $db->prepare($query);
 
         $params = array(
             'username' => $username
         );
-        $stmt   = $db->prepare($query);
+
 
         $stmt->execute($params);
         $stmt->setFetchMode(\PDO::FETCH_CLASS, 'AppSync\LogEntryRestored');
@@ -61,13 +59,13 @@ class LogEntryFactory {
     public static function getLogEntryById($id)
     {
         $db     = PdoFactory::getPdoInstance();
-
         $query  = 'SELECT * FROM appsync_log_entry WHERE id = :id';
+        $stmt   = $db->prepare($query);
 
         $params = array(
             'id' => $id
         );
-        $stmt   = $db->prepare($query);
+
 
         $stmt->execute($params);
         $stmt->setFetchMode(\PDO::FETCH_CLASS, 'AppSync\LogEntryRestored');

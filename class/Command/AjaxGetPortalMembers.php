@@ -61,18 +61,25 @@ class AjaxGetPortalMembers {
         // Use the UtilityFunctions to retrieve the info to be passed to the API
         $key      = \AppSync\UtilityFunctions::getOrgSyncKey();
         $base_url = \AppSync\UtilityFunctions::getOrgSyncURL();
+
         // Initialize the curl request
         $curl = curl_init();
+
         //get organization members by organization id
         curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $base_url."orgs/$org_id/accounts?key=$key"));
+
         // Execute the curl request and store the result
         $org_members = curl_exec($curl);
+
         // Check to make sure the result was valid
         if($org_members){
             $org_members = json_decode($org_members);
-        }else{
+        }
+        else
+        {
             $org_members = FALSE;
         }
+        
         // Close curl
         curl_close($curl);
         return $org_members;

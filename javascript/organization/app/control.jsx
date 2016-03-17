@@ -1,15 +1,24 @@
 import React from 'react-dom/node_modules/react';
 import ReactDOM from 'react-dom';
 
+// This is here to make webpack work, if you can find a better way please fix.
 export default class ControlBox extends React.Component {
   render() {
-    return <ControlActionBox add={this.props.add} remove={this.props.remove} completeState={this.props.completeState} state={this.props.state}
-        inputData={this.props.inputData} outputData={this.props.outputData} portalMembers={this.props.portalMembers}
-        errorData={this.props.errorData} singleRemove={this.props.singleRemove} groupMembers={this.props.groupMembers}
-        groupId={this.props.groupId}/>;
+    return <ControlActionBox add={this.props.add}
+                             remove={this.props.remove}
+                             completeState={this.props.completeState}
+                             state={this.props.state}
+                             inputData={this.props.inputData}
+                             outputData={this.props.outputData}
+                             portalMembers={this.props.portalMembers}
+                             errorData={this.props.errorData}
+                             singleRemove={this.props.singleRemove}
+                             groupMembers={this.props.groupMembers}
+                             groupId={this.props.groupId} />;
   }
 }
 
+// The main component for managing which component to display based on the parent state
 var ControlActionBox = React.createClass({
     // Function for setting the state to complete via calling the parents complete function
     completeState: function()
@@ -37,40 +46,51 @@ var ControlActionBox = React.createClass({
     // Render Function
     render: function()
     {
+        // If the state is set to 'LIST' then display the ListBox component
         if(this.props.state == "LIST")
         {
             return(
                 <div>
-                    <ListBox portalMembers={this.props.portalMembers} groupMembers={this.props.groupMembers}
-                        singleRemove={this.singleRemove} groupId={this.props.groupId}/>
+                    <ListBox portalMembers={this.props.portalMembers}
+                             groupMembers={this.props.groupMembers}
+                             singleRemove={this.singleRemove}
+                             groupId={this.props.groupId} />
                 </div>
             );
         }
+        // If the state is set to 'ADD' then display the AddBox component
         else if(this.props.state == "ADD")
         {
             return(
                 <div>
-                    <AddBox click={this.click} errorData={this.props.errorData} />
+                    <AddBox click={this.click}
+                            errorData={this.props.errorData} />
                 </div>
             );
         }
+        // If the state is set to 'REMOVE' then display the RemoveBox component
         else if(this.props.state == "REMOVE")
         {
             return(
                 <div>
-                    <RemoveBox click={this.click} errorData={this.props.errorData} />
+                    <RemoveBox click={this.click}
+                               errorData={this.props.errorData} />
                 </div>
             );
         }
+        // If the state is set to either 'PROCESSING' or 'COMPLETE' then display the ActionBox component
         else if(this.props.state == "PROCESSING" || this.props.state == "COMPLETE")
         {
             return(
                 <div>
-                    <ActionBox complete={this.props.completeState} inputData={this.props.inputData}
-                        outputData={this.props.outputData} state={this.props.state} />
+                    <ActionBox complete={this.props.completeState}
+                               inputData={this.props.inputData}
+                               outputData={this.props.outputData}
+                               state={this.props.state} />
                 </div>
             );
         }
+        // Fall through which "should not" happen but is here just in case
         else
         {
                 return(
@@ -90,10 +110,13 @@ var ListBox = React.createClass({
     // Render Function
     render: function()
     {
-
-        var controlStyle = {marginTop: '25px'};
+        // Set up the style variables
+        var controlStyle  = {marginTop: '25px'};
         var noMemberStyle = {marginTop: '10px'};
-        var members = Array();
+        // Pre initialize the members array
+        var members       = Array();
+
+        // If the group is set use the group's members, if not set use the portal members,
         if(this.props.groupId == -1)
         {
             members = this.props.portalMembers;
@@ -102,11 +125,21 @@ var ListBox = React.createClass({
         {
             members = this.props.groupMembers;
         }
+
+        // If the members array is empty just return a line about there being no members present
         if(members.length == 0)
         {
-            return (<div style={noMemberStyle}><p>There are no members at present, to add some members click on the Add Members tab.</p></div>);
+            return (
+                <div style={noMemberStyle}>
+                    <p>There are no members at present, to add some members click on the Add Members tab.</p>
+                </div>
+            );
         }
+
+        // The function callback needs to be put into a local variable because of scope
         var listRemove = this.remove;
+
+        // Map each member node into a table row
         var memberRows = members.map(function(node){
             return (
                 <tr key={node.email}>
@@ -117,10 +150,12 @@ var ListBox = React.createClass({
                         {node.email}
                     </td>
                     <td>
-                        <OptionBox listRemove={listRemove} email={node.email}/>
+                        <OptionBox listRemove={listRemove}
+                                   email={node.email}/>
                     </td>
                 </tr>);
         });
+
         return(
                 <div className="row">
                     <div className="col-md-6">
@@ -147,28 +182,38 @@ var AddBox = React.createClass({
     // be parsed and the students added.
     click: function()
     {
+        // Retrieve the value of the input via its reference
         var addText = this.refs.addText.value;
+
         this.props.click(addText);
     },
     // Render Function
     render: function()
     {
+        // Set up the style variables
         var controlStyle = {marginTop: '25px'};
-        var buttonStyle = {marginTop: '15px'};
-        var addError = false;
+        var buttonStyle  = {marginTop: '15px'};
+        // Start the error variable at false
+        var addError     = false;
+
+        // Only set the addError to true if the location of the errorData is 'Add'
         if(this.props.errorData.location == "Add")
         {
             addError = true;
         }
+
+        // Set up the classes for the div using classnames
         var addInputClasses = classNames({
-            'col-md-4': true,
+            'col-md-4' : true,
             'has-error': addError
         });
+
         return(
             <div>
                 <div className="row">
                     <div className={addInputClasses}>
-                        <textarea style={controlStyle} className="form-control" rows="5" cols="40" ref="addText"></textarea>
+                        <textarea style={controlStyle} className="form-control"
+                            rows="5" cols="40" ref="addText"></textarea>
                     </div>
                 </div>
                 <a onClick={this.click} style={buttonStyle} className="btn btn-lg btn-success">Add</a>
@@ -183,27 +228,36 @@ var RemoveBox = React.createClass({
     click: function()
     {
         var removeText = this.refs.removeText.value;
+
         this.props.click(removeText);
     },
     // Render Function
     render: function()
     {
+        // Set up the style variables
         var controlStyle = {marginTop: '25px'};
-        var buttonStyle = {marginTop: '15px'};
-        var removeError = false;
+        var buttonStyle  = {marginTop: '15px'};
+        // Start the error variable at false
+        var removeError  = false;
+
+        // Only set the removeError to true if the location of the errorData is 'Remove'
         if(this.props.errorData.location == "Remove")
         {
             removeError = true;
         }
+
+        // Set up the classes for the div using classnames
         var removeInputClasses = classNames({
-            'col-md-4': true,
-            'has-error': removeError
+            'col-md-4'  : true,
+            'has-error' : removeError
         });
+
         return(
             <div>
                 <div className="row">
                     <div className={removeInputClasses}>
-                        <textarea style={controlStyle} className="form-control" rows="5" cols="40" ref="removeText"></textarea>
+                        <textarea style={controlStyle} className="form-control"
+                            rows="5" cols="40" ref="removeText"></textarea>
                     </div>
                 </div>
                 <a onClick={this.click} style={buttonStyle} className="btn btn-lg btn-success">Remove</a>
@@ -221,45 +275,59 @@ var ActionBox = React.createClass({
     // Render Function
     render: function()
     {
-        var controlStyle = {marginTop: '25px'};
+        // If the inputData array is undefined, then just return an empty div
         if(this.props.inputData == undefined)
         {
-            return (<div></div>);
+            return (
+                <div></div>
+            );
         }
-        if(this.props.state == "PROCESSING" && this.props.inputData.length == this.props.outputData.length)
+
+        // If the state is in 'PROCESSING' and the inputData is the same size as the outputData
+        // then call the completeState function
+        if(this.props.state == "PROCESSING"
+            && this.props.inputData.length == this.props.outputData.length)
         {
             this.completeState();
         }
-        var data = Array();
-        var i = 0;
-        var cmpCnt = 0;
+
+        // Set up the style variables
+        var controlStyle = {marginTop: '25px'};
+        // Create an empty array to add the data to
+        var data          = Array();
+        // Variables for the for loop
+        var i             = 0;
+        var cmpCnt        = 0;
         var errorOccurred = false;
 
+        // Loop through the inputData array adding
         for(i; i < this.props.inputData.length; i++)
         {
-            var datum = Array();
+            var datum   = Array();
             datum.input = this.props.inputData[i].input;
+
             if(this.props.outputData[i] == undefined)
             {
                 datum.status = undefined;
-                datum.name = undefined;
+                datum.name   = undefined;
             }
             else
             {
                 datum.status = this.props.outputData[i].status;
-                datum.name = this.props.outputData[i].name;
+                datum.name   = this.props.outputData[i].name;
                 cmpCnt++;
+
                 if(!datum.status)
                 {
                     errorOccurred = true;
                 }
             }
+
             data.push(datum);
-
         }
-        console.log(data)
-        var rows = data.map(function(node){
 
+        // Create the rows based on the status
+        var rows = data.map(function(node){
             if(node.status == 0)
             {
                 return(
@@ -272,7 +340,8 @@ var ActionBox = React.createClass({
             }
             else if(node.status == 1)
             {
-                return(<tr key={node.input}>
+                return(
+                    <tr key={node.input}>
                         <td>{node.input}</td>
                         <td>{node.name}</td>
                         <td><i className="fa fa-check text-success"></i></td>
@@ -281,7 +350,8 @@ var ActionBox = React.createClass({
             }
             else if(node.status == 2)
             {
-                return(<tr key={node.input}>
+                return(
+                    <tr key={node.input}>
                         <td>{node.input}</td>
                         <td>{node.name}</td>
                         <td><i className="fa fa-times text-danger"></i></td>
@@ -290,7 +360,8 @@ var ActionBox = React.createClass({
             }
             else if(node.name == undefined && node.status == undefined)
             {
-                return(<tr key={node.input}>
+                return(
+                    <tr key={node.input}>
                         <td>{node.input}</td>
                         <td><i className="fa fa-spinner fa-pulse"></i></td>
                         <td><i className="fa fa-spinner fa-pulse"></i></td>
@@ -299,9 +370,7 @@ var ActionBox = React.createClass({
             }
         });
 
-
-        console.log(rows);
-
+        // Calculate the percentage for the progress bar
         var percentComplete = (cmpCnt / this.props.inputData.length) * 100;
 
         return(
@@ -324,7 +393,9 @@ var ActionBox = React.createClass({
                 </div>
                 <div className="row">
                     <div className="col-md-6">
-                        <ProgressBarBox state={this.props.state} percentComplete={percentComplete} errorOccurred={errorOccurred}/>
+                        <ProgressBarBox state={this.props.state}
+                                        percentComplete={percentComplete}
+                                        errorOccurred={errorOccurred}/>
                     </div>
                 </div>
             </div>
@@ -356,33 +427,45 @@ var ProgressBarBox = React.createClass({
     // Render Function
     render: function()
     {
-        var percentage = this.props.percentComplete + '%'
-        var progressBarStyle = {width: percentage};
-        var complete = false;
-        var success = true;
-        var danger = false;
-        var active = true;
+        // Set the class variables
+        var complete         = false;
+        var success          = true;
+        var danger           = false;
+        var active           = true;
+        var percentage       = this.props.percentComplete + '%'
+        // Set the style variable
+        var progressBarStyle = {
+                                    width   : percentage
+        };
+
+        // If the percentComplete equals 100 percent then set complete to
+        // true and active to false
         if(this.props.percentComplete == 100)
         {
             complete = true;
-            active = false;
+            active   = false;
         }
+
+        // If the errorOccurred prop is set then set the success to false and danger to true
         if(this.props.errorOccurred)
         {
             success = false;
-            danger = true;
+            danger  = true;
         }
+
+        // Set the progress bar classnames
         var progressBarClasses = classNames({
-            'progress-bar': true,
-            'progress-bar-striped': !complete,
-            'progress-bar-success': success,
-            'progress-bar-danger': danger,
-            'active': active
+            'progress-bar'          : true,
+            'progress-bar-striped'  : !(complete),
+            'progress-bar-success'  : success,
+            'progress-bar-danger'   : danger,
+            'active'                : active
         });
 
         return(
             <div className="progress">
-                <div className={progressBarClasses} role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style={progressBarStyle}>
+                <div className={progressBarClasses} role="progressbar" aria-valuenow="40"
+                     aria-valuemin="0" aria-valuemax="100" style={progressBarStyle}>
                 </div>
             </div>
         )

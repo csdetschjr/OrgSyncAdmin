@@ -27,9 +27,9 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
         $portal = $_REQUEST['portalId'];
 
         // Retrieve other important values and objects
-        $username = \Current_User::getUsername();
-        $portalObjs = \AppSync\PortalFactory::getPortalById($portal);
-        $umbrellaId = $portalObjs[0]->getUmbrellaId();
+        $username    = \Current_User::getUsername();
+        $portalObjs  = \AppSync\PortalFactory::getPortalById($portal);
+        $umbrellaId  = $portalObjs[0]->getUmbrellaId();
         $permissions = \AppSync\UmbrellaAdminFactory::getUmbrellaAdmin($username, $umbrellaId);
 
         // If the permissions array is empty then the user does not have permission to use this command
@@ -92,18 +92,28 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
     */
     public function removeAccount($user_id, $org_id){
         // Use the UtilityFunctions to retrieve the info to be passed to the API
-        $key = \AppSync\UtilityFunctions::getOrgSyncKey();
+        $key      = \AppSync\UtilityFunctions::getOrgSyncKey();
         $base_url = \AppSync\UtilityFunctions::getOrgSyncURL();
-        $id = \AppSync\UtilityFunctions::getIDFromUsername($user_id);
+        $id       = \AppSync\UtilityFunctions::getIDFromUsername($user_id);
+
         // Create the url
         $url = $base_url."/orgs/$org_id/accounts/remove";
+
         // Initialize curl
         $curl = curl_init();
-        curl_setopt_array($curl, array(CURLOPT_TIMEOUT => 900, CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $url, CURLOPT_POST => 1, CURLOPT_POSTFIELDS => "ids=$id&key=$key"));
+        curl_setopt_array($curl,
+                            array(CURLOPT_TIMEOUT => 900,
+                                    CURLOPT_RETURNTRANSFER => 1,
+                                    CURLOPT_URL => $url,
+                                    CURLOPT_POST => 1,
+                                    CURLOPT_POSTFIELDS => "ids=$id&key=$key"));
+
         // Execute the curl request and store the result
         $result = curl_exec($curl);
+
         // Close curl
         curl_close($curl);
+
         // Check to make sure the result was valid
         if($result){
             $result = json_decode($result);
@@ -122,6 +132,7 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
                 return FALSE;
             }
         }
+
         // Log that an attempt to interact with the API failed
         $logEntry = new \AppSync\LogEntry(null,
                              'Attempted to from user from portal in Orgsync API via removeAccount function, response was ' . $result->message,

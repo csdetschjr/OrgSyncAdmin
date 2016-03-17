@@ -12,17 +12,22 @@ var PermissionsViewBox = React.createClass({
     // Sets up an initial state for the class, with default values.
     getInitialState: function()
     {
-        return {toggleState: "LIST"};
+        return {
+                    toggleState : "LIST"
+        };
     },
     // Sets the new state and calls certain functions needed to update the rest of the portal.
     changeToggleState: function(newState)
     {
-        this.setState({toggleState: newState});
+        this.setState({
+                            toggleState : newState
+        });
     },
     // Render function
     render: function()
     {
         var action;
+
         if(this.state.toggleState == "LIST")
         {
             action = (<PermissionListBox />);
@@ -38,12 +43,14 @@ var PermissionsViewBox = React.createClass({
         else {
             action = (<div></div>);
         }
+
         return (
                 <div>
                     <h2>
                         Permissions
                     </h2>
-                    <PermissionToggleBox state={this.state.toggleState} toggle={this.changeToggleState}/>
+                    <PermissionToggleBox state={this.state.toggleState}
+                                         toggle={this.changeToggleState}/>
                     {action}
                 </div>
         );
@@ -74,9 +81,12 @@ var PermissionToggleBox = React.createClass({
     // Render Function
     render: function()
     {
-        var list = false;
-        var add = false;
-        var remove = false;
+        // Set the class variables to false initially
+        var list    = false;
+        var add     = false;
+        var remove  = false;
+
+        // Set the appropriate class variable to true
         if(this.props.state == "LIST")
         {
             list = true;
@@ -89,25 +99,31 @@ var PermissionToggleBox = React.createClass({
         {
             remove = true;
         }
+
+        // Set up the list classnames
         var listClasses = classNames({
-            'btn': true,
-            'btn-default': true,
-            'active': list
+            'btn'           : true,
+            'btn-default'   : true,
+            'active'        : list
         });
 
+        // Set up the add classnames
         var addClasses = classNames({
-            'btn': true,
-            'btn-default': true,
-            'active': add
+            'btn'           : true,
+            'btn-default'   : true,
+            'active'        : add
         });
 
+        // Set up the remove classnames
         var removeClasses = classNames({
-            'btn': true,
-            'btn-default': true,
-            'active': remove
+            'btn'           : true,
+            'btn-default'   : true,
+            'active'        : remove
         });
 
+        // Add some space on the top by adding a style of marginTop
         var toggleStyle = {marginTop: '25px'};
+
         return(
             <div className="row" style={toggleStyle}>
                 <div className="col-md-6">
@@ -131,7 +147,9 @@ var PermissionToggleBox = React.createClass({
 var PermissionListBox = React.createClass({
     getInitialState: function()
     {
-        return {userPermissions: []}
+        return ({
+                    userPermissions : []
+        });
     },
     componentDidMount: function()
     {
@@ -140,12 +158,14 @@ var PermissionListBox = React.createClass({
     retrievePermissions: function()
     {
         $.ajax({
-            url: 'index.php?module=appsync&action=AjaxGetAllUserPermissions',
-            type: 'GET',
-            dataType: 'json',
+            url         : 'index.php?module=appsync&action=AjaxGetAllUserPermissions',
+            type        : 'GET',
+            dataType    : 'json',
             success: function(data)
             {
-                this.setState({userPermissions: data});
+                this.setState({
+                                    userPermissions: data
+                });
             }.bind(this),
             error: function(xhr, status, err)
             {
@@ -157,15 +177,21 @@ var PermissionListBox = React.createClass({
     render: function()
     {
 
-        var controlStyle = {marginTop: '25px'};
-        var noPermissionStyle = {marginTop: '10px'};
+        var controlStyle        = {marginTop: '25px'};
+        var noPermissionStyle   = {marginTop: '10px'};
 
         if(this.state.userPermissions.length == 0)
         {
-            return (<div style={noPermissionStyle}><p>There are no permissions set at present, to add some permissions click on the Add Permissions tab.</p></div>);
+            return (
+                <div style={noPermissionStyle}>
+                    <p>There are no permissions set at present, to add some permissions click on the Add Permissions tab.</p>
+                </div>
+            );
         }
-        var permissions = this.state.userPermissions
-        var permissionRows = permissions.map(function(node){
+
+        var permissions     = this.state.userPermissions
+
+        var permissionRows  = permissions.map(function(node){
             return (
                 <tr key={node.username}>
                     <td>
@@ -176,6 +202,7 @@ var PermissionListBox = React.createClass({
                     </td>
                 </tr>);
         });
+
         return(
                 <div className="row">
                     <div className="col-md-6">
@@ -199,7 +226,12 @@ var PermissionListBox = React.createClass({
 var PermissionAddBox = React.createClass({
     getInitialState: function()
     {
-        return {username: "", umbrella: -1, update: false, umbrellaList: []}
+        return {
+                    username        : "",
+                    umbrella        : -1,
+                    update          : false,
+                    umbrellaList    : []
+        }
     },
     // When the component mounts update the available portals.
     componentDidMount: function()
@@ -209,11 +241,17 @@ var PermissionAddBox = React.createClass({
     inputChange: function()
     {
         var addUsername = this.refs.usernameInput.value;
-        this.setState({username: addUsername, update: ""});
+
+        this.setState({
+                            username    : addUsername,
+                            update      : ""
+        });
     },
     setUmbrella: function(umbrellaId)
     {
-        this.setState({umbrella: umbrellaId});
+        this.setState({
+                            umbrella    : umbrellaId
+        });
     },
     add: function()
     {
@@ -224,11 +262,15 @@ var PermissionAddBox = React.createClass({
     },
     addPermission: function()
     {
-        var inputData = {username: this.state.username, umbrella: this.state.umbrella};
+        var inputData = {
+                            username    : this.state.username,
+                            umbrella    : this.state.umbrella
+        };
+
         $.ajax({
-            url: 'index.php?module=appsync&action=AjaxAddPermission',
-            type: 'POST',
-            data: inputData,
+            url     : 'index.php?module=appsync&action=AjaxAddPermission',
+            type    : 'POST',
+            data    : inputData,
             success: function(data)
             {
                 this.setState({update: "success"});
@@ -243,12 +285,14 @@ var PermissionAddBox = React.createClass({
     getUmbrellas: function()
     {
         $.ajax({
-            url: 'index.php?module=appsync&action=AjaxGetAllUmbrellas',
-            type: 'GET',
-            dataType: 'json',
+            url         : 'index.php?module=appsync&action=AjaxGetAllUmbrellas',
+            type        : 'GET',
+            dataType    : 'json',
             success: function(data)
             {
-                this.setState({umbrellaList: data});
+                this.setState({
+                                    umbrellaList: data
+                });
             }.bind(this),
             error: function(xhr, status, err)
             {
@@ -259,9 +303,12 @@ var PermissionAddBox = React.createClass({
     },
     render: function()
     {
+        // Add some style to push the component down some
         var addStyle = {marginTop: '20px'};
         var button;
         var status;
+
+        // If the username is not empty and the umbrella is set add a button to save the permission
         if(this.state.username != "" && this.state.umbrella != -1)
         {
             button = (
@@ -277,6 +324,7 @@ var PermissionAddBox = React.createClass({
             );
         }
 
+        // Display an alert if the update happened successfully or not
         if(this.state.update == "success")
         {
             status = (
@@ -324,17 +372,30 @@ var PermissionAddBox = React.createClass({
 var PermissionRemoveBox = React.createClass({
     getInitialState: function()
     {
-        return {username: "", userPermissions: null, umbrella: -1, update: ""};
+        return ({
+                    username        : "",
+                    userPermissions : null,
+                    umbrella        : -1,
+                    update          : ""
+        });
     },
     inputChange: function()
     {
         var removeUsername = this.refs.usernameInput.value;
-        this.setState({username: removeUsername, umbrella: -1, update: ""});
+
+        this.setState({
+                            username    : removeUsername,
+                            umbrella    : -1,
+                            update      : ""
+        });
+
         this.getUmbrellaPermissions(removeUsername);
     },
     setUmbrella: function(umbrellaId)
     {
-        this.setState({umbrella: umbrellaId});
+        this.setState({
+                            umbrella    : umbrellaId
+        });
     },
     remove: function()
     {
@@ -345,11 +406,12 @@ var PermissionRemoveBox = React.createClass({
     },
     getUmbrellaPermissions: function(username)
     {
+        var inputData = {username: username};
         $.ajax({
-            url: 'index.php?module=appsync&action=AjaxGetUmbrellaPermissions',
-            type: 'GET',
-            dataType: 'json',
-            data: {username: username},
+            url         : 'index.php?module=appsync&action=AjaxGetUmbrellaPermissions',
+            type        : 'GET',
+            dataType    : 'json',
+            data        : inputData,
             success: function(data)
             {
                 this.setState({userPermissions: data});
@@ -364,42 +426,58 @@ var PermissionRemoveBox = React.createClass({
     {
         var inputUmbrella = this.state.umbrella;
         var inputUsername = this.state.username;
+        var inputData     = {
+                                username    : inputUsername,
+                                umbrella    : inputUmbrella
+        };
+
         $.ajax({
-            url: 'index.php?module=appsync&action=AjaxRemovePermission',
-            type: 'POST',
-            dataType: 'json',
-            data: {username: inputUsername, umbrella: inputUmbrella},
+            url         : 'index.php?module=appsync&action=AjaxRemovePermission',
+            type        : 'POST',
+            dataType    : 'json',
+            data        : inputData,
             success: function(data)
             {
-                console.log('success');
-                this.setState({update: "success"});
+                this.setState({
+                                    update  : "success"
+                });
             }.bind(this),
             error: function(xhr, status, err)
             {
-                this.setState({update: "failed"});
+                this.setState({
+                                    update  : "failed"
+                });
             }.bind(this)
         });
     },
     render: function()
     {
+        // Add style to make some space above this component
         var removeStyle = {marginTop: '20px'};
+        // Create variables for the parts to be displayed
         var umbrellaSelect;
         var button;
         var status;
+
+        // If the userPermissions are set and the userPermissions array is not empty then display the UmbrellaPickBox
         if(this.state.userPermissions != null && this.state.userPermissions.length != 0)
         {
             umbrellaSelect = (
                 <div className="form-group">
                     <label>Umbrella</label>
-                    <UmbrellaPickBox umbrellaList={this.state.userPermissions} change={this.setUmbrella} />
+                    <UmbrellaPickBox umbrellaList={this.state.userPermissions}
+                                     change={this.setUmbrella} />
                 </div>
             );
         }
         else
         {
-            umbrellaSelect =(<div></div>);
+            umbrellaSelect = (
+                <div></div>
+            );
         }
 
+        // If the umbrella is set then add a remove button
         if(this.state.umbrella != -1)
         {
             button = (
@@ -415,6 +493,7 @@ var PermissionRemoveBox = React.createClass({
             );
         }
 
+        // Display an alert upon the success or failure of the removal of a permission
         if(this.state.update == "success")
         {
             status = (

@@ -33,6 +33,7 @@ class UtilityFunctions {
             $_SESSION['state'] = 'LIVE';
         }
 
+        // If the state is not set to live then it will be set to test.
         if($state == 'LIVE')
         {
             return \AppSync\SettingFactory::getSetting('orgsync_live_url')->getValue();
@@ -87,7 +88,7 @@ class UtilityFunctions {
         $base_url = self::getOrgSyncURL();
         // Initialize curl
         $curl = curl_init();
-        curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $base_url.'accounts/username/$username?key=$key'));
+        curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $base_url."accounts/username/$username?key=$key"));
         // Execute the curl request and store its result
         $result = curl_exec($curl);
         // Close curl
@@ -115,8 +116,11 @@ class UtilityFunctions {
      * @return bannerId
      */
     public static function getBannerIDFromEmail($email){
+        // Breaks the email apart at the @ symbol, this should give the username
         $parts = explode('@', $email);
         $username = strtolower($parts[0]);
+        // If the username variable is not empty then retrieve the bannerId by the
+        // username from the sdr member table
         if(!empty($username)){
             $query = "SELECT * FROM sdr_member WHERE username='$username' ORDER BY id DESC";
             $result = pg_query($query);

@@ -27,9 +27,9 @@ class AjaxAddPortalStudent extends \AppSync\Command {
         $portal   = $_REQUEST['portalId'];
 
         // Retrieve other important values and objects
-        $username = \Current_User::getUsername();
-        $portalObjs = \AppSync\PortalFactory::getPortalById($portal);
-        $umbrellaId = $portalObjs[0]->getUmbrellaId();
+        $username    = \Current_User::getUsername();
+        $portalObjs  = \AppSync\PortalFactory::getPortalById($portal);
+        $umbrellaId  = $portalObjs[0]->getUmbrellaId();
         $permissions = \AppSync\UmbrellaAdminFactory::getUmbrellaAdmin($username, $umbrellaId);
 
         // If the permissions array is empty then the user does not have permission to use this command
@@ -52,7 +52,8 @@ class AjaxAddPortalStudent extends \AppSync\Command {
                 exit;
             }
         }
-        else {
+        else
+        {
             $banner = $input;
         }
 
@@ -101,17 +102,23 @@ class AjaxAddPortalStudent extends \AppSync\Command {
         {
             return $id;
         }
+
         // Create the url
         $import_url = $base_url."orgs/$org_id/accounts/add";
+
         // Initialize curl
         $curl = curl_init();
         curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $import_url, CURLOPT_POST => 1, CURLOPT_POSTFIELDS => "ids=$id&key=$key"));
+
         // Execute the curl request and store the result
         $result = curl_exec($curl);
+
         // Close curl
         curl_close($curl);
+
         // Check to make sure the result was valid
-        if($result){
+        if($result)
+        {
             $result = json_decode($result);
             if(is_object($result) && $result->success == "true")
             {
@@ -127,7 +134,9 @@ class AjaxAddPortalStudent extends \AppSync\Command {
                 \AppSync\LogEntryFactory::save($logEntry);
                 return FALSE;
             }
-        }else{
+        }
+        else
+        {
             // Log that an attempt to interact with the API failed
             $logEntry = new \AppSync\LogEntry(null,
                                  'Attempted to add user to portal in Orgsync API via userToOrg function, response was ' . $result->message,

@@ -21,11 +21,9 @@ class UmbrellaFactory {
      */
     public static function getUmbrellas()
     {
-        $db = PdoFactory::getPdoInstance();
-
+        $db    = PdoFactory::getPdoInstance();
         $query = 'SELECT * FROM appsync_umbrella';
-
-        $stmt = $db->prepare($query);
+        $stmt  = $db->prepare($query);
 
         $stmt->execute();
         $stmt->setFetchMode(\PDO::FETCH_CLASS, 'AppSync\UmbrellaRestored');
@@ -39,15 +37,13 @@ class UmbrellaFactory {
      */
     public static function getUmbrellaByOrgId($id)
     {
-        $db = PdoFactory::getPdoInstance();
-
+        $db    = PdoFactory::getPdoInstance();
         $query = 'SELECT * FROM appsync_umbrella WHERE orgsync_id = :id';
+        $stmt  = $db->prepare($query);
 
         $params = array(
             'id' => $id
         );
-
-        $stmt = $db->prepare($query);
 
         $stmt->execute($params);
         $stmt->setFetchMode(\PDO::FETCH_CLASS, 'AppSync\UmbrellaRestored');
@@ -63,7 +59,6 @@ class UmbrellaFactory {
     public static function save($umbrella)
     {
         $db = PdoFactory::getPdoInstance();
-
         $id = $umbrella->getId();
 
         if (isset($id)) {

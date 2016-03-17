@@ -27,13 +27,13 @@ class AjaxGetUmbrellaPermissions {
         $permissions = \AppSync\UmbrellaAdminFactory::getUmbrellaAdminByUsername($username);
 
         $returnData = array();
-        $i = 0;
+        $i          = 0;
 
         // For each permission add the id and name to the umbrella's array
         foreach($permissions as $permission)
         {
-            $umbrella = \AppSync\UmbrellaFactory::getUmbrellaByOrgId($permission->getUmbrellaId());
-            $returnData[$i]['umbrella_id'] = $umbrella->getOrgSyncId();
+            $umbrella                        = \AppSync\UmbrellaFactory::getUmbrellaByOrgId($permission->getUmbrellaId());
+            $returnData[$i]['umbrella_id']   = $umbrella->getOrgSyncId();
             $returnData[$i]['umbrella_name'] = $umbrella->getName();
             $i++;
         }

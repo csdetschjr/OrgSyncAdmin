@@ -17,8 +17,8 @@ class UmbrellaAdmin {
 
     public function __construct($id, $username, $umbrella_id)
     {
-        $this->id = $id;
-        $this->username = $username;
+        $this->id          = $id;
+        $this->username    = $username;
         $this->umbrella_id = $umbrella_id;
     }
 
