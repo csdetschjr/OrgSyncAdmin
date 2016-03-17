@@ -4,9 +4,14 @@ import ControlBox from './control.jsx';
 
 export default class PortalBox extends React.Component {
   render() {
-    return <PortalViewBox portal={this.props.portal} clearError={this.props.clearError} errorHandler={this.props.handleError}
-        errorData={this.props.errorData} portalMembers={this.props.portalMembers} listMembers={this.props.listMembers}
-        groupList={this.props.groupList} userPermissions={this.props.userPermissions}/>;
+    return <PortalViewBox portal={this.props.portal}
+                          clearError={this.props.clearError}
+                          errorHandler={this.props.handleError}
+                          errorData={this.props.errorData}
+                          portalMembers={this.props.portalMembers}
+                          listMembers={this.props.listMembers}
+                          groupList={this.props.groupList}
+                          userPermissions={this.props.userPermissions} />;
   }
 }
 
@@ -14,19 +19,35 @@ var PortalViewBox = React.createClass({
     // Sets up an initial state for the class, with default values.
     getInitialState: function()
     {
-        return {toggleState: "LIST", inputListData: [], outputListData: [], groupId: -1, groupName: "All Groups", groupMembers: [], showDropDown: false};
+        return ({
+                    toggleState     : "LIST",
+                    inputListData   : [],
+                    outputListData  : [],
+                    groupId         : -1,
+                    groupName       : "All Groups",
+                    groupMembers    : [],
+                    showDropDown    : false
+        });
     },
     // Sets the new state and calls certain functions needed to update the rest of the portal.
     changeToggleState: function(newState)
     {
-        this.setState({toggleState: newState, inputListData: [], outputListData: []});
+        this.setState({
+                            toggleState: newState,
+                            inputListData: [],
+                            outputListData: []
+        });
+
         this.props.clearError();
         this.getGroupMembers(this.state.groupId);
     },
     // Sets the state to the completed state, and refreshs the list of portal members.
     completeState: function()
     {
-        this.setState({toggleState: "COMPLETE"});
+        this.setState({
+                            toggleState : "COMPLETE"
+        });
+
         this.props.listMembers(this.props.portal);
     },
     // Parses the text provided by the ControlBox into an array of strings,
@@ -35,12 +56,13 @@ var PortalViewBox = React.createClass({
     addSubmit: function(addText)
     {
         var parsedTextData = this.parseData(addText);
-        var i;
+        var i              = 0;
 
-        for(i = 0; i < parsedTextData.length; i++)
+        for(i; i < parsedTextData.length; i++)
         {
             parsedTextData[i] = this.stripEmail(parsedTextData[i]);
         }
+
         this.createData(parsedTextData, "Add");
     },
     // Parses the text provided by the ControlBox into an array of strings,
@@ -49,12 +71,13 @@ var PortalViewBox = React.createClass({
     removeSubmit: function(removeText)
     {
         var parsedTextData = this.parseData(removeText);
-        var i;
+        var i              = 0;
 
-        for(i = 0; i < parsedTextData.length; i++)
+        for(i; i < parsedTextData.length; i++)
         {
             parsedTextData[i] = this.stripEmail(parsedTextData[i]);
         }
+
         this.createData(parsedTextData, "Remove");
     },
     // Parses the text splitting on commas, spaces, and newline characters.
@@ -77,26 +100,33 @@ var PortalViewBox = React.createClass({
     createData: function(parsedTextData, caller)
     {
         var newData = Array();
-        var i;
-        for(i = 0; i < parsedTextData.length; i++)
+        var i       = 0;
+
+        for(i; i < parsedTextData.length; i++)
         {
             if(parsedTextData[i] != "")
             {
                 newData[i] = {input: parsedTextData[i], name: '-', status: 0};
             }
         }
+
         if(newData.length != 0)
         {
-            this.setState({inputListData: newData});
-            this.setState({toggleState: "PROCESSING"});
+            this.setState({
+                                inputListData   : newData,
+                                toggleState     : "PROCESSING"
+            });
+
             if(this.props.errorData.location == "Add" || this.props.errorData.location == "Remove")
             {
                 this.props.clearError();
             }
+
             if(caller == "Add")
             {
                 this.processAdd(newData);
             }
+
             if(caller == "Remove")
             {
                 this.processRemove(newData);
@@ -104,7 +134,10 @@ var PortalViewBox = React.createClass({
         }
         else
         {
-            this.props.errorHandler({message: "Empty text field", location: caller});
+            this.props.errorHandler({
+                                        message     : "Empty text field",
+                                        location    : caller
+            });
         }
     },
     // Confirms with the user that they actually want to remove all students from the group/portal.
@@ -115,11 +148,13 @@ var PortalViewBox = React.createClass({
         if(confirm("This will remove all students from this organization...\n\nAre you sure?"))
         {
             var membersToRemove = Array();
-            var i;
-            for(i = 0; i < this.props.portalMembers.length; i++)
+            var i               = 0;
+
+            for(i; i < this.props.portalMembers.length; i++)
             {
                 membersToRemove[i] = this.props.portalMembers[i].email;
             }
+
             this.createData(membersToRemove, "Remove");
         }
     },
@@ -128,16 +163,17 @@ var PortalViewBox = React.createClass({
     singleRemove: function(email)
     {
         var name;
-
         var members = this.props.portalMembers;
-        var i;
-        for(i = 0; i < members.length; i++)
+        var i       = 0;
+
+        for(i; i < members.length; i++)
         {
             if(members[i].email == email)
             {
                 name = members[i].first_name + " " + members[i].last_name;
             }
         }
+
         if(confirm("Remove " + name + " from this organization...\n\nAre you sure?"))
         {
             var inputList = Array();
@@ -157,8 +193,10 @@ var PortalViewBox = React.createClass({
         {
             this.recordLogEntry('group', 'Adding', this.state.groupId);
         }
-        var i;
-        for(i = 0; i < addData.length; i++)
+
+        var i = 0;
+
+        for(i; i < addData.length; i++)
         {
             if(this.state.groupId == -1)
             {
@@ -182,7 +220,9 @@ var PortalViewBox = React.createClass({
         {
             this.recordLogEntry('group', 'Removing', this.state.groupId);
         }
+
         var i;
+
         for(i = 0; i < removeData.length; i++)
         {
             if(this.state.groupId == -1)
@@ -199,7 +239,11 @@ var PortalViewBox = React.createClass({
     // to refresh the groupMembers array and updates the groupName for the new group.
     changeGroup: function(newGroup)
     {
-        this.setState({groupId: newGroup, showDropDown: false});
+        this.setState({
+                            groupId         : newGroup,
+                            showDropDown    : false
+        });
+
         if(newGroup != -1)
         {
             this.getGroupMembers(newGroup);
@@ -214,29 +258,41 @@ var PortalViewBox = React.createClass({
             {
                 if(list[i].id == newGroup)
                 {
-                    this.setState({groupName: list[i].name});
+                    this.setState({
+                                        groupName   : list[i].name
+                    });
                 }
             }
         }
         else
         {
-            this.setState({groupName: "All Groups"})
+            this.setState({
+                                groupName   : "All Groups"
+            });
         }
     },
     showGroup: function()
     {
-        this.setState({showDropDown: true})
+        this.setState({
+                                showDropDown    : true
+        });
     },
     // Retrieve the members for the given group from the server via ajax.
     getGroupMembers: function(newGroup)
     {
-        var inputData = {groupId: newGroup, portalId: this.props.portal.id};
+        var inputData = {
+                            groupId     : newGroup,
+                            portalId    : this.props.portal.id
+        };
+
         $.ajax({
-            url: 'index.php?module=appsync&action=AjaxGetGroupMembers',
-            dataType: 'json',
-            data: inputData,
+            url         : 'index.php?module=appsync&action=AjaxGetGroupMembers',
+            dataType    : 'json',
+            data    : inputData,
             success: function(data) {
-                this.setState({groupMembers: data})
+                this.setState({
+                                    groupMembers: data
+                });
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(status, err.toString());
@@ -246,119 +302,195 @@ var PortalViewBox = React.createClass({
     // Add the new members to the portal via ajax.
     addPortalStudent: function(addInput, index)
     {
-        var inputData = {inputData: addInput, portalId: this.props.portal.id};
+        var inputData = {
+                            inputData   : addInput,
+                            portalId    : this.props.portal.id
+        };
+
         $.ajax({
-            url: 'index.php?module=appsync&action=AjaxAddPortalStudent',
-            type: 'POST',
-            data: inputData,
+            url     : 'index.php?module=appsync&action=AjaxAddPortalStudent',
+            type    : 'POST',
+            data    : inputData,
             success: function(data)
             {
-                var outputData = this.state.outputListData;
-                outputData[index] = JSON.parse(data);
+                console.log(data)
+                var outputData      = this.state.outputListData;
+                outputData[index]   = JSON.parse(data);
 
-                this.setState({outputListData: outputData});
+                this.setState({
+                                    outputListData: outputData
+                });
             }.bind(this),
             error: function(xhr, status, err)
             {
-                //TODO create error handler
+                var outputData      = this.state.outputListData;
+                outputData[index]   = {
+                                            "status"    : 0,
+                                            "name"      : ""
+                };
+
+                this.setState({
+                                    outputListData  : outputData
+                });
             }.bind(this)
         });
     },
     // Add the new members to the group via ajax.
     addGroupStudent: function(addInput, index)
     {
-        var inputData = {inputData: addInput, portalId: this.props.portal.id, groupId: this.state.groupId};
+        var inputData = {
+                            inputData   : addInput,
+                            portalId    : this.props.portal.id,
+                            groupId     : this.state.groupId
+        };
+
         $.ajax({
-            url: 'index.php?module=appsync&action=AjaxAddGroupStudent',
-            type: 'POST',
-            data: inputData,
+            url     : 'index.php?module=appsync&action=AjaxAddGroupStudent',
+            type    : 'POST',
+            data    : inputData,
             success: function(data)
             {
-                var outputData = this.state.outputListData;
-                outputData[index] = JSON.parse(data);
-                this.setState({outputListData: outputData});
+                var outputData      = this.state.outputListData;
+                outputData[index]   = JSON.parse(data);
+
+                this.setState({
+                                    outputListData  : outputData
+                });
             }.bind(this),
             error: function(xhr, status, err)
             {
-                //TODO create error handler
+                var outputData      = this.state.outputListData;
+                outputData[index]   = {
+                                            "status"    : 0,
+                                            "name"      : ""
+                };
+
+                this.setState({
+                                    outputListData  : outputData
+                });
             }.bind(this)
         });
     },
     // Remove the given members from the portal via ajax
     removePortalStudent: function(removeInput, index)
     {
-        var inputData = {inputData: removeInput, portalId: this.props.portal.id};
+        var inputData = {
+                            inputData   : removeInput,
+                            portalId    : this.props.portal.id
+        };
+
         $.ajax({
-            url: 'index.php?module=appsync&action=AjaxRemovePortalStudent',
-            type: 'POST',
-            data: inputData,
+            url     : 'index.php?module=appsync&action=AjaxRemovePortalStudent',
+            type    : 'POST',
+            data    : inputData,
             success: function(data)
             {
-                var outputData = this.state.outputListData;
-                outputData[index] = JSON.parse(data);
-                this.setState({outputListData: outputData});
+                console.log(data)
+                var outputData      = this.state.outputListData;
+                outputData[index]   = JSON.parse(data);
+
+                this.setState({
+                                    outputListData  : outputData
+                });
             }.bind(this),
             error: function(xhr, status, err)
             {
-                //TODO create error handler
+                var outputData      = this.state.outputListData;
+                outputData[index]   = {
+                                            "status"    : 0,
+                                            "name"      : ""
+                };
+
+                this.setState({
+                                    outputListData  : outputData
+                });
             }.bind(this)
         });
     },
     // Remove the given members from the group via ajax
     removeGroupStudent: function(removeInput, index)
     {
-        var inputData = {inputData: removeInput, portalId: this.props.portal.id, groupId: this.state.groupId};
+        var inputData = {
+                            inputData   : removeInput,
+                            portalId    : this.props.portal.id,
+                            groupId     : this.state.groupId
+        };
+
         $.ajax({
-            url: 'index.php?module=appsync&action=AjaxRemoveGroupStudent',
-            type: 'POST',
-            data: inputData,
+            url     : 'index.php?module=appsync&action=AjaxRemoveGroupStudent',
+            type    : 'POST',
+            data    : inputData,
             success: function(data)
             {
-                var outputData = this.state.outputListData;
-                outputData[index] = JSON.parse(data);
-                this.setState({outputListData: outputData});
+                var outputData      = this.state.outputListData;
+                outputData[index]   = JSON.parse(data);
+
+                this.setState({
+                                    outputListData  : outputData
+                });
             }.bind(this),
             error: function(xhr, status, err)
             {
-                //TODO create error handler
+                var outputData      = this.state.outputListData;
+                outputData[index]   = {
+                                            "status"    : 0,
+                                            "name"      : ""
+                };
+
+                this.setState({
+                                    outputListData  : outputData
+                });
             }.bind(this)
         });
     },
     // Record a add or remove by a user.
     recordLogEntry: function(category, action, id)
     {
-        var inputData = {logCategory: category, logAction: action, logId: id};
+        var inputData = {
+                            logCategory : category,
+                            logAction   : action,
+                            logId       : id
+        };
+
         $.ajax({
-            url: 'index.php?module=appsync&action=AjaxLogAction',
-            type: 'POST',
-            data: inputData,
+            url     : 'index.php?module=appsync&action=AjaxLogAction',
+            type    : 'POST',
+            data    : inputData,
             success: function()
             {
-
+                // This is not anything the user needs to be notified of
             }.bind(this),
             error: function(xhr, status, err)
             {
-                //TODO create error handler
+                // This is not anything the user needs to be notified of
             }.bind(this)
         });
     },
     // Render function
     render: function()
     {
-        console.log(this.props.userPermissions)
+        // Add style to make the link font larger
         var linkStyle = {fontSize: '12px'};
         var link;
+
+        // If the state variable for showDropDown is set then show the dropdown otherwise
+        // add a link that on click will change the showDropDown.
         if(!this.state.showDropDown)
         {
             var link = (<a style={linkStyle} onClick={this.showGroup}>Switch Group</a>);
         }
         else
         {
-                var dropdown = (<div className="col-md-3">
-                <GroupPickBox groups={this.props.groupList} change={this.changeGroup}
-                    state={this.state.toggleState} groupId={this.state.groupId}/>
-            </div>)
+            var dropdown = (
+                <div className="col-md-3">
+                    <GroupPickBox groups={this.props.groupList}
+                                  change={this.changeGroup}
+                                  state={this.state.toggleState}
+                                  groupId={this.state.groupId}/>
+                </div>
+            );
         }
+
         return(
             <div>
                 <h2>
@@ -368,10 +500,17 @@ var PortalViewBox = React.createClass({
                 <div className="col-md-12">
                     <ToggleBox toggle={this.changeToggleState} state={this.state.toggleState} clear={this.clear} groupId={this.state.groupId}
                         userPermissions={this.props.userPermissions}/>
-                    <ControlBox add={this.addSubmit} remove={this.removeSubmit} completeState={this.completeState} state={this.state.toggleState}
-                        inputData={this.state.inputListData} outputData={this.state.outputListData} portalMembers={this.props.portalMembers}
-                        errorData={this.props.errorData} singleRemove={this.singleRemove} groupMembers={this.state.groupMembers}
-                        groupId={this.state.groupId}/>
+                    <ControlBox add={this.addSubmit}
+                                remove={this.removeSubmit}
+                                completeState={this.completeState}
+                                state={this.state.toggleState}
+                                inputData={this.state.inputListData}
+                                outputData={this.state.outputListData}
+                                portalMembers={this.props.portalMembers}
+                                errorData={this.props.errorData}
+                                singleRemove={this.singleRemove}
+                                groupMembers={this.state.groupMembers}
+                                groupId={this.state.groupId}/>
                 </div>
             </div>
         );
@@ -388,23 +527,39 @@ var GroupPickBox = React.createClass({
     // Render Function
     render: function()
     {
+        // if the state is 'PROCESSING'
         if(this.props.state == "PROCESSING")
         {
-            return (<div></div>);
+            return (
+                <div></div>
+            );
         }
-        var groupsStyle = {marginTop: '20px'};
-        var options = Array({id: -1, name: "All Groups"});
-        var data = this.props.groups;
-        var i;
 
-        for(i = 0; i < data.length; i++)
+        // Set up the style to push the component down a little bit
+        var groupsStyle = {marginTop: '20px'};
+        var options     = Array();
+        var data        = this.props.groups;
+        var i           = 0;
+        var firstOption = {
+                                id      : -1,
+                                name    : "All Groups"
+        };
+
+        // Push the firstOption onto the options array
+        options.push(firstOption);
+
+        // Loop through the data pushing them onto the options array
+        for(i; i < data.length; i++)
         {
             options.push(data[i]);
         }
 
+        // Create an option for each data node
         var selectOptions = options.map(function(node)
         {
-                return(<option key={node.id} value={node.id}>{node.name}</option>);
+            return(
+                <option key={node.id} value={node.id}>{node.name}</option>
+            );
         });
 
         return(
@@ -441,14 +596,21 @@ var ToggleBox = React.createClass({
     // Render Function
     render: function()
     {
+        // If the state is set to 'PROCESSING' display nothing
         if(this.props.state == "PROCESSING")
         {
-            return (<div></div>);
+            return (
+                <div></div>
+            );
         }
-        else {
-            var list = false;
-            var add = false;
-            var remove = false;
+        else
+        {
+            // Set all the classname variables to false initially
+            var list    = false;
+            var add     = false;
+            var remove  = false;
+
+            // Set the appropriate classname variable to true
             if(this.props.state == "LIST")
             {
                 list = true;
@@ -461,25 +623,31 @@ var ToggleBox = React.createClass({
             {
                 remove = true;
             }
+
+            // Set the list toggle class via classNames
             var listClasses = classNames({
-                'btn': true,
-                'btn-default': true,
-                'active': list
+                'btn'           : true,
+                'btn-default'   : true,
+                'active'    : list
             });
 
+            // Set the add toggle class via classNames
             var addClasses = classNames({
-                'btn': true,
-                'btn-default': true,
-                'active': add
+                'btn'           : true,
+                'btn-default'   : true,
+                'active'        : add
             });
 
+            // Set the remove toggle class via classNames
             var removeClasses = classNames({
-                'btn': true,
-                'btn-default': true,
-                'active': remove
+                'btn'           : true,
+                'btn-default'   : true,
+                'active'        : remove
             });
 
+            // Add some space above the component using marginTop
             var toggleStyle = {marginTop: '25px'};
+
             return(
                 <div className="row" style={toggleStyle}>
                     <div className="col-md-6">
@@ -496,8 +664,10 @@ var ToggleBox = React.createClass({
                         </div>
                     </div>
                     <div className="col-md-3 col-md-offset-3">
-                        <ButtonBox clear={this.clear} state={this.props.state} groupId={this.props.groupId}
-                            userPermissions={this.props.userPermissions}/>
+                        <ButtonBox clear={this.clear}
+                                   state={this.props.state}
+                                   groupId={this.props.groupId}
+                                   userPermissions={this.props.userPermissions}/>
                     </div>
                 </div>
             );
@@ -515,12 +685,18 @@ var ButtonBox = React.createClass({
     // Render method
     render: function()
     {
+        // If the state is in 'PROCESSING' or the user does not have purge permission then display an empty div
         if(this.props.state == "PROCESSING" || !this.props.userPermissions.purge)
         {
-            return (<div></div>);
+            return (
+                <div></div>
+            );
         }
-        else {
+        else
+        {
             var message;
+
+            // If the group is set then the message should be different
             if(this.props.groupId == -1)
             {
                 message = "Purge All Members";
@@ -529,6 +705,7 @@ var ButtonBox = React.createClass({
             {
                 message = "Purge All Members From Group";
             }
+
             return(
                 <div>
                     <a onClick={this.clear} className="btn btn-md btn-danger">{message}</a>

@@ -17,8 +17,8 @@ class Portal {
 
     public function __construct($orgsync_id, $name, $umbrella_id)
     {
-        $this->orgsync_id = $orgsync_id;
-        $this->name = $name;
+        $this->orgsync_id  = $orgsync_id;
+        $this->name        = $name;
         $this->umbrella_id = $umbrella_id;
     }
 

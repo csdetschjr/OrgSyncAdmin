@@ -18,18 +18,22 @@ class AjaxGetAllUserPermissions {
 
     public function execute()
     {
+        // Make sure the user has the appropriate permissions to make changes to the permissions settings.
+        // Basically only deities will have access to permissions.
         if(!(\Current_User::isDeity()))
         {
             echo json_encode('user does not have permission to retrieve permissions');
             exit;
         }
 
+        // Retrieve the permissions from the database
         $permissions = \AppSync\UmbrellaAdminFactory::getAllUmbrellaAdmins();
 
 
-        $userList = array();
+        $userList   = array();
         $returnData = array();
 
+        // For each permission if the username is not in the userList array add them
         foreach($permissions as $permission)
         {
             $username = $permission->getUsername();
@@ -40,6 +44,8 @@ class AjaxGetAllUserPermissions {
             }
         }
 
+        // For each user in the userList array create a permissionList that will be
+        // returned to the front end
         foreach ($userList as $username)
         {
             $permissionList = "";
@@ -63,6 +69,7 @@ class AjaxGetAllUserPermissions {
             array_push($returnData, $node);
         }
 
+        // Echo the json encoded data back to the front end.
         echo json_encode($returnData);
         exit;
     }

@@ -15,6 +15,9 @@ class AjaxGetUserPermissions {
 
     }
 
+    /**
+     * The main function for executing the command.
+     */
     public function execute()
     {
         $returnData = array('username' => \Current_User::getUsername(),
@@ -22,7 +25,7 @@ class AjaxGetUserPermissions {
                             'view' => \Current_User::allow('appsync', 'view'),
                             'purge' => \Current_User::allow('appsync', 'purge'));
 
-
+        // Echo the values back to the front end after encoding them.
         echo json_encode($returnData);
         exit;
     }

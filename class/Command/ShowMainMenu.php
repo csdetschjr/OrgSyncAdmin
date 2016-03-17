@@ -17,6 +17,9 @@ class ShowMainMenu extends \AppSync\Command {
         return array('action'=>'ShowMainMenu');
     }
 
+    /**
+     * The main function for executing the command.
+     */
     public function execute()
     {
         $view = new \AppSync\UI\TopUI();

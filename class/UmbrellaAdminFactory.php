@@ -21,14 +21,13 @@ class UmbrellaAdminFactory {
      */
     public static function getUmbrellaAdminByUsername($username)
     {
-        $db = PdoFactory::getPdoInstance();
-
+        $db    = PdoFactory::getPdoInstance();
         $query = 'SELECT * FROM appsync_umbrella_admin WHERE username = :username';
+        $stmt  = $db->prepare($query);
 
         $params = array(
             'username' => $username
         );
-        $stmt = $db->prepare($query);
 
         $stmt->execute($params);
         $stmt->setFetchMode(\PDO::FETCH_CLASS, 'AppSync\UmbrellaAdminRestored');
@@ -42,15 +41,15 @@ class UmbrellaAdminFactory {
      */
     public static function getUmbrellaAdmin($username, $umbrellaId)
     {
-        $db = PdoFactory::getPdoInstance();
-
+        $db    = PdoFactory::getPdoInstance();
         $query = 'SELECT * FROM appsync_umbrella_admin WHERE username = :username AND umbrella_id = :umbrellaId';
+        $stmt  = $db->prepare($query);
 
         $params = array(
             'username' => $username,
             'umbrellaId' => $umbrellaId
         );
-        $stmt = $db->prepare($query);
+
 
         $stmt->execute($params);
         $stmt->setFetchMode(\PDO::FETCH_CLASS, 'AppSync\UmbrellaAdminRestored');
@@ -64,11 +63,9 @@ class UmbrellaAdminFactory {
      */
     public static function getAllUmbrellaAdmins()
     {
-        $db = PdoFactory::getPdoInstance();
-
+        $db    = PdoFactory::getPdoInstance();
         $query = 'SELECT * FROM appsync_umbrella_admin';
-
-        $stmt = $db->prepare($query);
+        $stmt  = $db->prepare($query);
 
         $stmt->execute();
         $stmt->setFetchMode(\PDO::FETCH_CLASS, 'AppSync\UmbrellaAdminRestored');
@@ -82,15 +79,14 @@ class UmbrellaAdminFactory {
      */
     public static function removeUmbrellaAdmin($username, $umbrellaId)
     {
-        $db = PdoFactory::getPdoInstance();
-
+        $db    = PdoFactory::getPdoInstance();
         $query = 'DELETE FROM appsync_umbrella_admin WHERE username = :username AND umbrella_id = :umbrellaId';
+        $stmt  = $db->prepare($query);
 
         $params = array(
             'username' => $username,
             'umbrellaId' => $umbrellaId
         );
-        $stmt = $db->prepare($query);
 
         $stmt->execute($params);
     }
@@ -102,7 +98,6 @@ class UmbrellaAdminFactory {
     public static function save($umbrellaAdmin)
     {
         $db = PdoFactory::getPdoInstance();
-
         $id = $umbrellaAdmin->getId();
 
         if (isset($id)) {

@@ -19,8 +19,8 @@ class Umbrella {
     // TODO: make first parameter an instance of $student
     public function __construct($id, $name, $orgsync_id)
     {
-    	$this->id = $id;
-        $this->name = $name;
+    	$this->id         = $id;
+        $this->name       = $name;
         $this->orgsync_id = $orgsync_id;
     }
 

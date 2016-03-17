@@ -20,11 +20,9 @@ class PortalFactory {
      */
     public static function getPortals()
     {
-        $db = PdoFactory::getPdoInstance();
-
+        $db    = PdoFactory::getPdoInstance();
         $query = 'SELECT * FROM appsync_portal';
-
-        $stmt = $db->prepare($query);
+        $stmt  = $db->prepare($query);
 
         $stmt->execute();
         $stmt->setFetchMode(\PDO::FETCH_CLASS, 'AppSync\PortalRestored');
@@ -39,11 +37,9 @@ class PortalFactory {
      */
     public static function getPortalById($orgsyncId)
     {
-        $db = PdoFactory::getPdoInstance();
-
+        $db    = PdoFactory::getPdoInstance();
         $query = 'SELECT * FROM appsync_portal WHERE orgsync_id = :orgsyncId';
-
-        $stmt = $db->prepare($query);
+        $stmt  = $db->prepare($query);
 
         $params = array(
             'orgsyncId' => $orgsyncId
@@ -61,11 +57,9 @@ class PortalFactory {
      */
     public static function getPortalByName($name)
     {
-        $db = PdoFactory::getPdoInstance();
-
+        $db    = PdoFactory::getPdoInstance();
         $query = 'SELECT * FROM appsync_portal WHERE name = :name';
-
-        $stmt = $db->prepare($query);
+        $stmt  = $db->prepare($query);
 
         $params = array(
             'name' => $name
@@ -83,8 +77,7 @@ class PortalFactory {
      */
     public static function save($portal)
     {
-        $db = PdoFactory::getPdoInstance();
-
+        $db         = PdoFactory::getPdoInstance();
         $orgsync_id = $portal->getOrgSyncId();
 
         if (!empty(self::getPortalById($orgsync_id))) {

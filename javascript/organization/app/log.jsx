@@ -13,7 +13,13 @@ var LogViewBox = React.createClass({
     // Sets up an initial state for the class, with default values.
     getInitialState: function()
     {
-        return {log: [], retrieved: false, users: [], filter: false, username: ""}
+        return {
+                    log         : [],
+                    retrieved   : false,
+                    users       : [],
+                    filter      : false,
+                    username    : ""
+        }
     },
     // When the component mounts retrieve the log and the users.
     componentWillMount: function()
@@ -24,7 +30,9 @@ var LogViewBox = React.createClass({
     // Toggles the filter value
     filterToggle: function()
     {
-        this.setState({filter: !this.state.filter});
+        this.setState({
+                            filter  : !(this.state.filter)
+        });
     },
     // Changes the username to the one in users array corresponding with the passed
     // in index.
@@ -32,23 +40,30 @@ var LogViewBox = React.createClass({
     {
         if(index == -1)
         {
-            this.setState({username: ""});
+            this.setState({
+                            username    : ""
+            });
         }
         else
         {
-            this.setState({username: this.state.users[index].username});
+            this.setState({
+                            username    : this.state.users[index].username
+            });
         }
     },
     // Retrieves the log from the server via AJAX.
     getLog: function()
     {
         $.ajax({
-            url: 'index.php?module=appsync&action=AjaxGetLog',
-            type: 'GET',
-            dataType: 'json',
+            url         : 'index.php?module=appsync&action=AjaxGetLog',
+            type        : 'GET',
+            dataType    : 'json',
             success: function(data)
             {
-                this.setState({log: data, retrieved: true});
+                this.setState({
+                                    log         : data,
+                                    retrieved   : true
+                });
             }.bind(this),
             error: function(xhr, status, err)
             {
@@ -60,12 +75,14 @@ var LogViewBox = React.createClass({
     getUsernames: function()
     {
         $.ajax({
-            url: 'index.php?module=appsync&action=AjaxRetrieveUsers',
-            type: 'GET',
-            dataType: 'json',
+            url         : 'index.php?module=appsync&action=AjaxRetrieveUsers',
+            type        : 'GET',
+            dataType    : 'json',
             success: function(data)
             {
-                this.setState({users: data});
+                this.setState({
+                                    users   : data
+                });
             }.bind(this),
             error: function(xhr, status, err)
             {
@@ -76,19 +93,25 @@ var LogViewBox = React.createClass({
     // Render function
     render: function()
     {
+        // Set up the variables
         var log;
         var rows;
         var data = this.state.log;
+
+        // If the state is retrieved then display the data retrieved
         if(this.state.retrieved)
         {
             var empty = true;
+
             if(this.state.username != "")
             {
                 var checkUsername = this.state.username;
+
                 var rows = data.map(function(node){
                     if(node.username == checkUsername)
                     {
-                        empty = false
+                        empty = false;
+
                         return (
                             <tr key={node.occurredOn}>
                                 <td>
@@ -104,9 +127,11 @@ var LogViewBox = React.createClass({
                     }
                 });
             }
-            else {
+            else
+            {
                 var rows = data.map(function(node){
                     empty = false;
+
                     return (
                         <tr key={node.occurredOn}>
                             <td>
@@ -121,31 +146,44 @@ var LogViewBox = React.createClass({
                         </tr>);
                 });
             }
+
+            // In case there are no log entries, an empty message
             if(empty)
             {
-                rows = (<p>No log entries</p>);
+                rows = (
+                    <p>No log entries</p>
+                );
             }
-            log = (<table className="table table-hover table-striped">
-                        <thead>
-                            <th>Occurred</th>
-                            <th>Username</th>
-                            <th>Description</th>
-                        </thead>
-                        <tbody>
-                            {rows}
-                        </tbody>
-                   </table>);
+
+            // Finally create the log table to be displayed
+            log = (
+                <table className="table table-hover table-striped">
+                    <thead>
+                        <th>Occurred</th>
+                        <th>Username</th>
+                        <th>Description</th>
+                    </thead>
+                    <tbody>
+                        {rows}
+                    </tbody>
+                </table>
+            );
         }
         else
         {
-            log = (<div></div>);
+            log = (
+                <div></div>
+            );
         }
+
         return (
                 <div>
                     <h2>Change Log</h2>
                     <div className="col-md-9">
-                        <FilterBox filterToggle={this.filterToggle} changeUsername={this.changeUsername}
-                            filter={this.state.filter} users={this.state.users}/>
+                        <FilterBox filterToggle={this.filterToggle}
+                                   changeUsername={this.changeUsername}
+                                   filter={this.state.filter}
+                                   users={this.state.users} />
                         {log}
                     </div>
                 </div>
@@ -164,45 +202,64 @@ var FilterBox = React.createClass({
     changeFilterUsername: function()
     {
         var uChoice = ReactDOM.findDOMNode(this.refs.usernameChoice);
-        var value = uChoice.value;
+        var value   = uChoice.value;
+
         this.props.changeUsername(value);
     },
     // Render Function
     render: function()
     {
+        // Create several useful variables
         var usernameInput;
         var usernames;
-        var data = new Array({username: "All Users"})
-
         var users = this.props.users;
-        var i = 0;
+        var data = new Array();
 
+        // Set the default option that will be displayed first in the dropdown
+        var defaultOption = {
+                                username    : "All Users"
+        };
+
+        // Push the defaultOption onto the array to be the first option in the dropdown
+        data.push(defaultOption);
+
+        // Loop through and add each user in order
+        var i = 0;
         for(i; i< users.length;i++)
         {
             data.push(users[i]);
         }
 
+        // If the filter is set then display the dropdown to select the username to filter by
         if(this.props.filter)
         {
             var x = -1;
+
             usernames = data.map(function(node){
                 var option = (
                     <option value={x}>
                         {node.username}
                     </option>
-                    );
+                );
+
                 x++;
+
                 return option;
             });
-            usernameInput = (<div className="form-group">
-                                <label>Username</label>
-                                <select onChange={this.changeFilterUsername} ref="usernameChoice">
-                                    {usernames}
-                                </select>
-                             </div>);
+
+            usernameInput = (
+                                <div className="form-group">
+                                    <label>Username</label>
+                                    <select onChange={this.changeFilterUsername} ref="usernameChoice">
+                                        {usernames}
+                                    </select>
+                                </div>
+            );
         }
         else {
-            usernameInput = (<div></div>);
+            usernameInput = (
+                <div></div>
+            );
         }
 
         return(
@@ -214,7 +271,7 @@ var FilterBox = React.createClass({
                 </div>
                 {usernameInput}
             </div>
-            );
+        );
 
     }
 });

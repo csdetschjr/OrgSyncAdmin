@@ -16,19 +16,27 @@ class AjaxSetSettings extends \AppSync\Command {
           return array('action'=>'AjaxGetUmbrellaList');
       }
 
+      /**
+       * The main function for executing the command.
+       */
       public function execute()
       {
+          // Make sure the user has the appropriate permissions to make changes to the permissions settings.
+          // Basically only deities will have access to permissions.
           if(!(\Current_User::isDeity()))
           {
               echo json_encode('user does not have permission to set live state');
               exit;
           }
+
+          // Retrieve the input values from the request
           $newState     = $_REQUEST['state'];
           $newLiveUrl   = $_REQUEST['liveUrl'];
           $newTestUrl   = $_REQUEST['testUrl'];
           $newKey       = $_REQUEST['key'];
           $newBannerUrl = $_REQUEST['bannerUrl'];
 
+          // If the newLiveUrl is not empty set the value in the database to the new value
           if($newLiveUrl != '')
           {
               $liveUrlSetting = \AppSync\SettingFactory::getSetting('orgsync_live_url');
@@ -43,6 +51,7 @@ class AjaxSetSettings extends \AppSync\Command {
               \AppSync\SettingFactory::save($liveUrlSetting);
           }
 
+          // If the newTestUrl is not empty, set the value in the database to the new value
           if($newTestUrl != '')
           {
               $testUrlSetting = \AppSync\SettingFactory::getSetting('orgsync_test_url');
@@ -57,6 +66,7 @@ class AjaxSetSettings extends \AppSync\Command {
               \AppSync\SettingFactory::save($testUrlSetting);
           }
 
+          // If the newKey is not empty, set the value in the database to the new value
           if($newKey != '')
           {
               $keySetting = \AppSync\SettingFactory::getSetting('orgsync_key');
@@ -71,6 +81,7 @@ class AjaxSetSettings extends \AppSync\Command {
               \AppSync\SettingFactory::save($keySetting);
           }
 
+          // If the newBannerUrl is not empty, set the value in the database to the new value
           if($newBannerUrl != '')
           {
               $bannerUrlSetting = \AppSync\SettingFactory::getSetting('banner_url');
@@ -85,6 +96,8 @@ class AjaxSetSettings extends \AppSync\Command {
               \AppSync\SettingFactory::save($bannerUrlSetting);
           }
 
+          // If the newState is 'LIVE' set the session to 'LIVE', if it is 'TEST'
+          // set it to 'TEST', otherwise throw an error
           if($newState == 'LIVE')
           {
               $_SESSION['state'] = 'LIVE';
@@ -95,7 +108,7 @@ class AjaxSetSettings extends \AppSync\Command {
           }
           else
           {
-              echo json_encode(array('type' => 'success', 'message' => 'input does not match a valid server type: '.$newState));
+              echo json_encode(array('type' => 'error', 'message' => 'input does not match a valid server type: '.$newState));
               exit;
           }
 

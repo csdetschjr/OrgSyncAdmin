@@ -14,8 +14,14 @@ var OrgsyncSettingsViewBox = React.createClass({
     // Sets up an initial state for the class, with default values.
     getInitialState: function()
     {
-        return {toggleState: "", liveUrl: "Live URL", testUrl: "Test URL", orgKey: "OrgSync Key",
-            bannerUrl: "Banner URL", alert: undefined};
+        return {
+                    toggleState : "",
+                    liveUrl     : "Live URL",
+                    testUrl     : "Test URL",
+                    orgKey      : "OrgSync Key",
+                    bannerUrl   : "Banner URL",
+                    alert       : undefined
+        };
     },
     // When the component mounts retrieve the current settings.
     componentWillMount: function()
@@ -25,24 +31,40 @@ var OrgsyncSettingsViewBox = React.createClass({
     // Set the toggleState to the value passed and reset the alert.
     changeToggleState: function(value)
     {
-        this.setState({toggleState: value, alert: undefined});
+        this.setState({
+                            toggleState : value,
+                            alert       : undefined
+        });
     },
     // Pass the given values and the current toggleState to the settings and reset the alert.
     saveChanges: function(liveUrlInput, testUrlInput, keyInput, bannerUrlInput)
     {
-        this.setState({alert: undefined});
-        this.setSettings(this.state.toggleState, liveUrlInput, testUrlInput, keyInput, bannerUrlInput);
+        this.setState({
+                            alert   : undefined
+        });
+
+        this.setSettings(this.state.toggleState,
+                         liveUrlInput,
+                         testUrlInput,
+                         keyInput,
+                         bannerUrlInput
+        );
     },
     // Retrieve the current settings via AJAX request.
     retrieveSettings: function()
     {
         $.ajax({
-            url: 'index.php?module=appsync&action=AjaxGetSettings',
-            type: 'GET',
-            dataType: 'json',
+            url         : 'index.php?module=appsync&action=AjaxGetSettings',
+            type        : 'GET',
+            dataType    : 'json',
             success: function(data){
-                this.setState({toggleState: data.state, liveUrl: data.liveUrl,
-                    testUrl: data.testUrl, orgKey: data.key, bannerUrl: data.bannerUrl});
+                this.setState({
+                                    toggleState : data.state,
+                                    liveUrl     : data.liveUrl,
+                                    testUrl     : data.testUrl,
+                                    orgKey      : data.key,
+                                    bannerUrl   : data.bannerUrl
+                });
             }.bind(this),
             error: function(){
 
@@ -52,16 +74,24 @@ var OrgsyncSettingsViewBox = React.createClass({
     // Set the current settings via AJAX POST request.
     setSettings: function(stateValue, liveUrlInput, testUrlInput, keyInput, bannerUrlInput)
     {
-        var inputData = {state: stateValue, liveUrl: liveUrlInput, testUrl: testUrlInput, key: keyInput, bannerUrl: bannerUrlInput};
-        console.log(inputData)
+        var inputData = {
+                            state       : stateValue,
+                            liveUrl     : liveUrlInput,
+                            testUrl     : testUrlInput,
+                            key         : keyInput,
+                            bannerUrl   : bannerUrlInput
+        };
+
         $.ajax({
-            url: 'index.php?module=appsync&action=AjaxSetSettings',
-            type: 'POST',
-            dataType: 'json',
-            data: inputData,
+            url         : 'index.php?module=appsync&action=AjaxSetSettings',
+            type        : 'POST',
+            dataType    : 'json',
+            data        : inputData,
             success: function(data)
             {
-                this.setState({alert: data});
+                this.setState({
+                                    alert   : data
+                });
             }.bind(this),
             error: function(){
 
@@ -74,9 +104,13 @@ var OrgsyncSettingsViewBox = React.createClass({
         return (
                 <div>
                     <AlertBox alert={this.state.alert}/>
-                    <LiveToggleBox state={this.state.toggleState} toggle={this.changeToggleState}/>
-                    <SettingsInputBox liveUrl={this.state.liveUrl} testUrl={this.state.testUrl}
-                        orgKey={this.state.orgKey} bannerUrl={this.state.bannerUrl} save={this.saveChanges}/>
+                    <LiveToggleBox state={this.state.toggleState}
+                                   toggle={this.changeToggleState}/>
+                    <SettingsInputBox liveUrl={this.state.liveUrl}
+                                      testUrl={this.state.testUrl}
+                                      orgKey={this.state.orgKey}
+                                      bannerUrl={this.state.bannerUrl}
+                                      save={this.saveChanges}/>
                 </div>
         );
     }
@@ -98,9 +132,11 @@ var LiveToggleBox = React.createClass({
     // Render Function
     render: function()
     {
+        // Set the live and test variables to false initially
         var live = false;
         var test = false;
 
+        // Set the appropriate live/test variable to true
         if(this.props.state == "LIVE")
         {
             live = true;
@@ -110,19 +146,23 @@ var LiveToggleBox = React.createClass({
             test = true;
         }
 
+        // Set the classes of the live button based on the live variable
         var liveClasses = classNames({
-            'btn': true,
-            'btn-default': true,
-            'active': live
+            'btn'           : true,
+            'btn-default'   : true,
+            'active'        : live
         });
 
+        // Set the classes of the test button based on the test variable
         var testClasses = classNames({
-            'btn': true,
-            'btn-default': true,
-            'active': test
+            'btn'           : true,
+            'btn-default'   : true,
+            'active'        : test
         });
 
+        // Set the style of the class to create space above it
         var toggleStyle = {marginTop: '25px'};
+
         return(
             <div style={toggleStyle}>
                 <h4>Currently using {this.props.state}</h4>
@@ -147,12 +187,18 @@ var SettingsInputBox = React.createClass({
     // On click function that passes up the current values of the inputs to the parent component.
     save: function()
     {
-        this.props.save(this.refs.liveUrlInput.value, this.refs.testUrlInput.value, this.refs.keyInput.value, this.refs.bannerUrlInput.value);
+        this.props.save(this.refs.liveUrlInput.value,
+                        this.refs.testUrlInput.value,
+                        this.refs.keyInput.value,
+                        this.refs.bannerUrlInput.value
+        );
     },
     // Render function
     render: function()
     {
+        // Set the style of the class to create space above it
         var inputsStyle ={marginTop: '20px'};
+
         return(
             <div style={inputsStyle} className="col-md-5">
                 <div className="form-group">
@@ -175,7 +221,7 @@ var SettingsInputBox = React.createClass({
                     <i className="fa fa-save"></i> Save
                 </button>
             </div>
-            );
+        );
     }
 });
 
@@ -185,15 +231,22 @@ var AlertBox = React.createClass({
     // Render function
     render: function()
     {
+        // If the alert is undefined or the message is an empty string then
+        // just display an empty div
         if(this.props.alert == undefined || this.props.alert.message == "")
         {
-            return (<div></div>)
+            return (
+                <div></div>
+            );
         }
         else
         {
+            // Set the alert class variables up as false initially
             var alert;
             var success = false;
-            var error = false;
+            var error   = false;
+
+            // set the class variables
             if(this.props.alert.type == "success")
             {
                 var success = true;
@@ -203,18 +256,26 @@ var AlertBox = React.createClass({
                 var error = true;
             }
 
+            // Set the alert class via classNames
             var alertClass = classNames({
-                'alert': true,
-                'alert-success': success,
-                'alert-danger': error
+                'alert'         : true,
+                'alert-success' : success,
+                'alert-danger'  : error
             });
+
+            // Set the appropriate class for the font awesome icon
             var faClass = classNames({
-                'fa': true,
-                'fa-2x': true,
-                'fa-check': success,
-                'fa-times': error
+                'fa'        : true,
+                'fa-2x'     : true,
+                'fa-check'  : success,
+                'fa-times'  : error
             });
-            var alertSymbol = (<i className={faClass}></i>);
+
+            // Create the font awesome icon
+            var alertSymbol = (
+                <i className={faClass}></i>
+            );
+
             return (
                 <div className={alertClass} role="alert">
                     {alertSymbol} {this.props.alert.message}

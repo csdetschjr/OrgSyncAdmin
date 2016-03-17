@@ -16,12 +16,17 @@ class AjaxGetLog extends \AppSync\Command {
         return array('action'=>'AjaxGetLogPager');
     }
 
+    /**
+     * The main function for executing the command.
+     */
     public function execute()
     {
+        // Retrieve the logs from the database
         $logs = \AppSync\LogEntryFactory::getOrderedLogEntries();
 
         $response = array();
 
+        // For each logEntry create a row in the response array.
         foreach ($logs as $logEntry)
         {
             $row = array('occurredOn' => date('m/d/Y h:m:s a', $logEntry->getOccurredOn()),
@@ -30,6 +35,7 @@ class AjaxGetLog extends \AppSync\Command {
             $response[] = $row;
         }
 
+        // Echo the json encoded data back to the front end.
         echo json_encode($response);
         exit;
     }
