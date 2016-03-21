@@ -27,15 +27,16 @@ var AppSyncBox = React.createClass({
                                         location: ""
                                       },
                     userPermissions : null,
-                    view            : "BLANK",
-                    umbrellaList    : []
+                    view            : "LANDING",
+                    umbrellaList    : [],
+                    updating        : false,
                 };
     },
     // When the component mounts update the available portals.
     componentDidMount: function()
     {
         this.getUmbrellas();
-        this.updatePortals();
+        this.getLastUpdated();
         this.getUserPermissions();
     },
     // Set the value of the umbrella to the value picked on the dropdown
@@ -112,20 +113,43 @@ var AppSyncBox = React.createClass({
             }.bind(this)
         });
     },
+    // Retrieve the last time the portals list was updated
+    getLastUpdated: function() {
+        $.ajax({
+            url         : 'index.php?module=appsync&action=AjaxGetLastUpdated',
+            type        : 'POST',
+            dataType    : 'json',
+            success: function(data) {
+                this.setState({
+                                    lastUpdated     : data.lastUpdated
+                })
+            }.bind(this),
+            error: function(xhr, status, err){
+                console.error(status, err.toString());
+            }.bind(this)
+        });
+    },
     // Sends a call to the server to update the portals from the orgsync api.
     updatePortals: function() {
+        // Lets the landing page know that it is in the process of updating, so it can inform the user
+        this.setState({
+                            updating    : true
+        });
         $.ajax({
             url     : 'index.php?module=appsync&action=AjaxUpdateOrgData',
             type    : 'POST',
             success: function()
             {
                 this.setState({
-                                    updated : true
+                                    updated     : true,
+                                    updating    : false
                 });
             }.bind(this),
             error: function(xhr, status, err)
             {
-                //TODO create error handler
+                this.setState({
+                                    updating : false
+                });
             }.bind(this)
         });
     },
@@ -247,7 +271,7 @@ var AppSyncBox = React.createClass({
         else
         {
             view = (
-                <div></div>
+                <LandingBox lastUpdated={this.state.lastUpdated} updatePortals={this.updatePortals} updating={this.state.updating}/>
             );
         }
 
@@ -533,6 +557,32 @@ var PortalPickBox = React.createClass({
             <input type="search" name="portalId" id="portalSearch"
                 className="form-control typeahead" placeholder="Portal Name"
                 ref="searchString" autoComplete="off" autofocus/>
+        );
+    }
+});
+
+var LandingBox = React.createClass({
+    updatePortals: function()
+    {
+        this.props.updatePortals();
+    },
+    // Render function
+    render: function()
+    {
+        var updateButton;
+        if(!this.props.updating)
+        {
+            updateButton = <button className="btn btn-primary pull-right" onClick={this.updatePortals}>Update Portal List</button>;
+        }
+        else
+        {
+            updateButton = <button className="btn btn-primary pull-right">Updating <i className="fa fa-spinner fa-pulse"></i></button>
+        }
+        return (
+            <div className="alert alert-info" role="alert">
+                <i className="fa fa-exclamation fa-2x"></i> <span>You may update the portal list, this process will take a short time to complete.  The list of portals was last updated: {this.props.lastUpdated}</span>
+                    {updateButton}
+            </div>
         );
     }
 });

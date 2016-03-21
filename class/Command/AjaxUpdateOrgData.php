@@ -13,7 +13,7 @@ namespace AppSync\Command;
 class AjaxUpdateOrgData extends \AppSync\Command {
 
       public function getRequestVars(){
-          return array('action'=>'AjaxGetUmbrellaList');
+          return array('action'=>'AjaxUpdateOrgData');
       }
 
       /**
@@ -22,19 +22,34 @@ class AjaxUpdateOrgData extends \AppSync\Command {
        */
       public function execute()
       {
+          $orgs = $this->getAllOrganizations();
 
-        //   $orgs = $this->getAllOrganizations();
-          //
-        //   foreach ($orgs as $org) {
-        //       $orgId = $org->id;
-        //       $name = $org->long_name;
-        //       $umbrellaId = $org->umbrella_id;
-        //       if($name != null && $umbrellaId != null && $orgId != null)
-        //       {
-        //           $portal = new \AppSync\Portal($orgId, $name, $umbrellaId);
-        //           \AppSync\PortalFactory::save($portal);
-        //       }
-        //   }
+          \AppSync\PortalFactory::emptyPortals();
+
+          foreach ($orgs as $org) {
+              $orgId = $org->id;
+              $name = $org->long_name;
+              $umbrellaId = $org->umbrella_id;
+              if($name != null && $umbrellaId != null && $orgId != null)
+              {
+                  $portal = new \AppSync\Portal($orgId, $name, $umbrellaId);
+                  var_dump($portal);
+                  \AppSync\PortalFactory::save($portal);
+              }
+          }
+
+          $lastUpdatedSetting = \AppSync\SettingFactory::getSetting('last_updated');
+
+          if($lastUpdatedSetting)
+          {
+              $lastUpdatedSetting->setValue(time());
+              \AppSync\SettingFactory::save($lastUpdatedSetting);
+          }
+          else
+          {
+              $setting = new \AppSync\Setting(null, 'last_updated', time());
+              \AppSync\SettingFactory::save($setting);
+          }
 
       }
 

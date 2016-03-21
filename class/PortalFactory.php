@@ -72,6 +72,17 @@ class PortalFactory {
     }
 
     /**
+     * Removes all the portals from the database, uses truncate;
+     */
+    public static function emptyPortals()
+    {
+        $db     = PdoFactory::getPdoInstance();
+        $query  = 'TRUNCATE appsync_portal';
+        $stmt   = $db->prepare($query);
+        $stmt->execute();
+    }
+
+    /**
      * Saves a portal to the database, if the portal object already exists updates
      * it with the new values.
      */
@@ -79,8 +90,9 @@ class PortalFactory {
     {
         $db         = PdoFactory::getPdoInstance();
         $orgsync_id = $portal->getOrgSyncId();
+        $portalExists     = self::getPortalById($orgsync_id);
 
-        if (!empty(self::getPortalById($orgsync_id))) {
+        if (!empty($portalExists)) {
             $query = "UPDATE appsync_portal SET (name, umbrella_id) = (:name, :umbrellaId) WHERE orgsync_id = :orgsyncId";
 
             $params = array(
