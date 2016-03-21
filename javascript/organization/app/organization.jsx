@@ -29,7 +29,8 @@ var AppSyncBox = React.createClass({
                     userPermissions : null,
                     view            : "LANDING",
                     umbrellaList    : [],
-                    updating        : false,
+                    liveState       : "LIVE",
+                    updating        : false
                 };
     },
     // When the component mounts update the available portals.
@@ -38,6 +39,7 @@ var AppSyncBox = React.createClass({
         this.getUmbrellas();
         this.getLastUpdated();
         this.getUserPermissions();
+        this.retrieveLiveState();
     },
     // Set the value of the umbrella to the value picked on the dropdown
     setUmbrella: function(newUmbrella)
@@ -69,8 +71,8 @@ var AppSyncBox = React.createClass({
     {
         this.setState({
                             errorData: {
-                                            message : "",
-                                            location: ""
+                                            message     : "",
+                                            location    : ""
                                         }
         });
     },
@@ -92,6 +94,12 @@ var AppSyncBox = React.createClass({
                             view    : "ORGSYNC_SETTINGS"
         });
     },
+    setLiveState: function(newLiveState)
+    {
+        this.setState({
+                            liveState   : newLiveState
+        });
+    },
     // Retrieve the members for the given portal from the server via ajax.
     getMembers: function(datum) {
         var inputData = {
@@ -110,6 +118,23 @@ var AppSyncBox = React.createClass({
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(status, err.toString());
+            }.bind(this)
+        });
+    },
+    // Retrieve the current settings via AJAX request.
+    retrieveLiveState: function()
+    {
+        $.ajax({
+            url         : 'index.php?module=appsync&action=AjaxGetSettings',
+            type        : 'GET',
+            dataType    : 'json',
+            success: function(data){
+                this.setState({
+                                    liveState : data.state
+                });
+            }.bind(this),
+            error: function(){
+
             }.bind(this)
         });
     },
@@ -265,7 +290,7 @@ var AppSyncBox = React.createClass({
         else if(this.state.view == "ORGSYNC_SETTINGS")
         {
             view = (
-                <OrgsyncSettingsBox/>
+                <OrgsyncSettingsBox setLiveState={this.setLiveState}/>
             );
         }
         else
@@ -284,7 +309,8 @@ var AppSyncBox = React.createClass({
                                showPermissionsView={this.showPermissionsView}
                                umbrellaList={this.state.umbrellaList}
                                showLogView={this.showLogView}
-                               showOrgsyncSettings={this.showOrgsyncSettings} />
+                               showOrgsyncSettings={this.showOrgsyncSettings}
+                               liveState={this.state.liveState}/>
                 {errorBox}
                 {view}
             </div>
@@ -397,7 +423,7 @@ var NavigationBox = React.createClass({
                                 <span className="icon-bar"></span>
                                 <span className="icon-bar"></span>
                             </button>
-                            <a className="navbar-brand" href="#">AppSync Admin</a>
+                            <a className="navbar-brand" href="#">AppSync Admin <strong>{this.props.liveState}</strong></a>
                         </div>
                         <div className="collapse navbar-collapse">
                             <ul className="nav navbar-nav">

@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom';
 
 export default class OrgsyncSettingsBox extends React.Component {
   render() {
-    return (<OrgsyncSettingsViewBox umbrellaList={this.props.umbrellaList}/>);
+    return (<OrgsyncSettingsViewBox umbrellaList={this.props.umbrellaList}
+                                    setLiveState={this.props.setLiveState}/>);
   }
 }
 
@@ -65,6 +66,7 @@ var OrgsyncSettingsViewBox = React.createClass({
                                     orgKey      : data.key,
                                     bannerUrl   : data.bannerUrl
                 });
+                this.props.setLiveState(data.state);
             }.bind(this),
             error: function(){
 
@@ -92,6 +94,7 @@ var OrgsyncSettingsViewBox = React.createClass({
                 this.setState({
                                     alert   : data
                 });
+                this.retrieveSettings();
             }.bind(this),
             error: function(){
 
