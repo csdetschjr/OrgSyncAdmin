@@ -65,17 +65,11 @@ class UtilityFunctions {
         // Initialize curl
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_URL, $base_url.'Student');
+        curl_setopt($curl, CURLOPT_URL, $base_url."Student/$banner");
         // Execute the curl request and store its result
-        $studentList = json_decode(curl_exec($curl));
+        $student = json_decode(curl_exec($curl));
 
-        // Loop through the student list and retrieve the student with the given banner id
-        foreach ($studentList as $student) {
-            if($student->{'ID'} == $banner)
-            {
-                return $student;
-            }
-        }
+        return $student;
     }
 
     /**
