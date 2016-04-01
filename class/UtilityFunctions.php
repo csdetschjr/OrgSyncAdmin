@@ -62,14 +62,29 @@ class UtilityFunctions {
         // Retrieve the url for Banner from the database
         $base_url = \AppSync\SettingFactory::getSetting('banner_url')->getValue();
 
+
         // Initialize curl
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_URL, $base_url."Student/$banner");
         // Execute the curl request and store its result
         $student = json_decode(curl_exec($curl));
+        curl_close($curl);
 
-        return $student;
+        if($student)
+        {
+            return $student;
+        }
+        else
+        {
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_URL, $base_url."Faculty/$banner");
+            // Execute the curl request and store its result
+            $faculty = json_decode(curl_exec($curl));
+
+            return $faculty;
+        }
     }
 
     /**

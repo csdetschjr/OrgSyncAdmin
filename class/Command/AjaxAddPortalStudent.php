@@ -61,7 +61,7 @@ class AjaxAddPortalStudent extends \AppSync\Command {
         // back to the front end if it is
         $student = \AppSync\UtilityFunctions::getStudentByBanner($banner);
 
-        if($student == null)
+        if($student == null || $student->Message != null || $student->email == null)
         {
             $returnData = array('status' => 0);
             echo json_encode($returnData);

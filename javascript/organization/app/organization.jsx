@@ -169,6 +169,7 @@ var AppSyncBox = React.createClass({
                                     updated     : true,
                                     updating    : false
                 });
+                this.getLastUpdated();
             }.bind(this),
             error: function(xhr, status, err)
             {
