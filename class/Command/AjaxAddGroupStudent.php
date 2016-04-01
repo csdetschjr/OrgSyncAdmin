@@ -60,7 +60,8 @@ class AjaxAddGroupStudent extends \AppSync\Command {
         // Retrieve the student and make sure it is not null, passing an error
         // back to the front end if it is
         $student = \AppSync\UtilityFunctions::getStudentByBanner($banner);
-        if($student == null)
+        
+        if($student == null || isset($student->Message) || $student->emailAddress == null)
         {
             $returnData = array('status' => 0);
             echo json_encode($returnData);
