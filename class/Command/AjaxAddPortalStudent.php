@@ -120,7 +120,7 @@ class AjaxAddPortalStudent extends \AppSync\Command {
         if($result)
         {
             $result = json_decode($result);
-            if(is_object($result) && $result->success == "true")
+            if(is_object($result) && isset($result->success) && $result->success == "true")
             {
                 return TRUE;
             }

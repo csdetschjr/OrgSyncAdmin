@@ -99,6 +99,7 @@ var PortalViewBox = React.createClass({
     // previously the clearError function is called first.  An error is set if there was no data.
     createData: function(parsedTextData, caller)
     {
+        console.log("hits create data function")
         var newData = Array();
         var i       = 0;
 
@@ -110,27 +111,28 @@ var PortalViewBox = React.createClass({
             }
         }
 
+        console.log('before if statement')
         if(newData.length != 0)
         {
-            this.setState({
-                                inputListData   : newData,
-                                toggleState     : "PROCESSING"
-            });
 
-            if(this.props.errorData.location == "Add" || this.props.errorData.location == "Remove")
-            {
-                this.props.clearError();
-            }
+            this.setData(newData);
 
-            if(caller == "Add")
-            {
-                this.processAdd(newData);
-            }
+            setTimeout(function(){
+                if(this.props.errorData.location == "Add" || this.props.errorData.location == "Remove")
+                {
+                    this.props.clearError();
+                }
 
-            if(caller == "Remove")
-            {
-                this.processRemove(newData);
-            }
+                if(caller == "Add")
+                {
+                    this.processAdd(newData);
+                }
+
+                if(caller == "Remove")
+                {
+                    this.processRemove(newData);
+                }
+            }.bind(this), 200);
         }
         else
         {
@@ -139,6 +141,15 @@ var PortalViewBox = React.createClass({
                                         location    : caller
             });
         }
+    },
+    setData: function(newData)
+    {
+        this.setState({
+                            inputListData   : newData,
+                            toggleState     : "PROCESSING"
+        });
+
+        return newData;
     },
     // Confirms with the user that they actually want to remove all students from the group/portal.
     // If they say yes then it iterates through the portalMembers prop adding them to an arra and passes
@@ -310,6 +321,7 @@ var PortalViewBox = React.createClass({
         $.ajax({
             url     : 'index.php?module=appsync&action=AjaxAddPortalStudent',
             type    : 'POST',
+            async   : false,
             data    : inputData,
             success: function(data)
             {
@@ -347,6 +359,7 @@ var PortalViewBox = React.createClass({
         $.ajax({
             url     : 'index.php?module=appsync&action=AjaxAddGroupStudent',
             type    : 'POST',
+            async   : false,
             data    : inputData,
             success: function(data)
             {
@@ -382,6 +395,7 @@ var PortalViewBox = React.createClass({
         $.ajax({
             url     : 'index.php?module=appsync&action=AjaxRemovePortalStudent',
             type    : 'POST',
+            async   : false,
             data    : inputData,
             success: function(data)
             {
@@ -419,6 +433,7 @@ var PortalViewBox = React.createClass({
         $.ajax({
             url     : 'index.php?module=appsync&action=AjaxRemoveGroupStudent',
             type    : 'POST',
+            async   : false,
             data    : inputData,
             success: function(data)
             {

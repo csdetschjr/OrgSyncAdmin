@@ -317,7 +317,7 @@ var ActionBox = React.createClass({
                 datum.name   = this.props.outputData[i].name;
                 cmpCnt++;
 
-                if(!datum.status)
+                if(!(datum.status == 1))
                 {
                     errorOccurred = true;
                 }
@@ -325,6 +325,8 @@ var ActionBox = React.createClass({
 
             data.push(datum);
         }
+
+        console.log()
 
         // Create the rows based on the status
         var rows = data.map(function(node){
@@ -363,8 +365,8 @@ var ActionBox = React.createClass({
                 return(
                     <tr key={node.input}>
                         <td>{node.input}</td>
-                        <td><i className="fa fa-spinner fa-pulse"></i></td>
-                        <td><i className="fa fa-spinner fa-pulse"></i></td>
+                        <td><i className="fa fa-spinner"></i></td>
+                        <td><i className="fa fa-spinner"></i></td>
                     </tr>
                 );
             }
@@ -375,6 +377,13 @@ var ActionBox = React.createClass({
 
         return(
             <div style={controlStyle}>
+                <div className="row">
+                    <div className="col-md-6">
+                        <ProgressBarBox state={this.props.state}
+                                        percentComplete={percentComplete}
+                                        errorOccurred={errorOccurred}/>
+                    </div>
+                </div>
                 <div className="row">
                     <div className="col-md-6">
                         <table className="table table-striped">
@@ -391,13 +400,7 @@ var ActionBox = React.createClass({
                         </table>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-md-6">
-                        <ProgressBarBox state={this.props.state}
-                                        percentComplete={percentComplete}
-                                        errorOccurred={errorOccurred}/>
-                    </div>
-                </div>
+
             </div>
         );
     }
