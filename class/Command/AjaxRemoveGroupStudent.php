@@ -66,9 +66,12 @@ class AjaxRemoveGroupStudent extends \AppSync\Command {
             exit;
         }
 
+
+        $id     = \AppSync\UtilityFunctions::getIDFromUsername($student->{'emailAddress'});
+        
         // Pass the student info and group id to the function responsible for interacting
         // with the OrgSync API
-        $status = $this->removeGroupAccount($student->{'emailAddress'}, $groupId);
+        $status = $this->removeGroupAccount($id, $groupId);
 
         // Create the response to the front end
         $name = $student->{'firstName'} . ' ' . $student->{'lastName'};
@@ -92,11 +95,10 @@ class AjaxRemoveGroupStudent extends \AppSync\Command {
     * @param int $user_id (can be array of user id's), int $group_id (groups id)
     * @return boolean (success or not)
     */
-    public function removeGroupAccount($user_id, $group_id){
+    public function removeGroupAccount($id, $group_id){
         // Use the UtilityFunctions to retrieve the info to be passed to the API
         $key = \AppSync\UtilityFunctions::getOrgSyncKey();
         $base_url = \AppSync\UtilityFunctions::getOrgSyncURL();
-        $id = \AppSync\UtilityFunctions::getIDFromUsername($user_id);
 
         // Create the url
         $import_url = $base_url."groups/$group_id/accounts/remove";

@@ -146,4 +146,40 @@ class UtilityFunctions {
         }
     }
 
+        /**
+     * Add an account to OrgSync.  Remember that you must be setup for SSO and know the proper
+     * username format for your university.  Usually is the email but it could be different.
+     *
+     *
+     */
+    public static function addAccount($username, $first_name, $last_name, $student_id, $send_welcome=FALSE){
+        // Retrieve the orgsync url values using the static functions in this class
+        $key = self::getOrgSyncKey();
+        $base_url = self::getOrgSyncURL();
+
+        $json_data = array("username" => $username,
+                           "send_welcome" => $send_welcome,
+                           "account_attributes" => array("email_address" => $username,
+                                                         "first_name" => $first_name,
+                                                         "last_name" => $last_name),
+                           "identification_card_numbers" => array($student_id));
+        //    $json_data = array("username" => $username, "send_welcome" => true, "account_attributes" => array("email_address" => $username, "first_name" => $first_name, "last_name" => $last_name));
+        $json_data = json_encode($json_data);
+        $url = $base_url."/accounts?key=$key";
+        $curl = curl_init();
+        curl_setopt_array($curl, array(CURLOPT_TIMEOUT => 900, CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $url, CURLOPT_POST => 1, CURLOPT_POSTFIELDS => $json_data));
+        $result = curl_exec($curl);
+        curl_close($curl);
+        if($result){
+            $result = json_decode($result);
+            if(!empty($result->id)){
+                return TRUE;
+            }else{
+                echo var_dump($result); //need to write this to log instead of echo
+                return FALSE;
+            }
+        }
+    }
+
+
 }

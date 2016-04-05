@@ -65,9 +65,11 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
             exit;
         }
 
+        $id     = \AppSync\UtilityFunctions::getIDFromUsername($student->{'emailAddress'});
+
         // Pass the student info and group id to the function responsible for interacting
         // with the OrgSync API
-        $status = $this->removeAccount($student->{'emailAddress'}, $portal);
+        $status = $this->removeAccount($id, $portal);
 
         // Create the response to the front end
         $name = $student->{'firstName'} . ' ' . $student->{'lastName'};
@@ -90,11 +92,10 @@ class AjaxRemovePortalStudent extends \AppSync\Command {
     *
     *
     */
-    public function removeAccount($user_id, $org_id){
+    public function removeAccount($id, $org_id){
         // Use the UtilityFunctions to retrieve the info to be passed to the API
         $key      = \AppSync\UtilityFunctions::getOrgSyncKey();
         $base_url = \AppSync\UtilityFunctions::getOrgSyncURL();
-        $id       = \AppSync\UtilityFunctions::getIDFromUsername($user_id);
 
         // Create the url
         $url = $base_url."/orgs/$org_id/accounts/remove";

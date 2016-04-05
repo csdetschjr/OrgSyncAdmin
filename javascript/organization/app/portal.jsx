@@ -99,7 +99,6 @@ var PortalViewBox = React.createClass({
     // previously the clearError function is called first.  An error is set if there was no data.
     createData: function(parsedTextData, caller)
     {
-        console.log("hits create data function")
         var newData = Array();
         var i       = 0;
 
@@ -111,7 +110,6 @@ var PortalViewBox = React.createClass({
             }
         }
 
-        console.log('before if statement')
         if(newData.length != 0)
         {
 
@@ -325,7 +323,6 @@ var PortalViewBox = React.createClass({
             data    : inputData,
             success: function(data)
             {
-                console.log(data)
                 var outputData      = this.state.outputListData;
                 outputData[index]   = JSON.parse(data);
 
@@ -399,7 +396,6 @@ var PortalViewBox = React.createClass({
             data    : inputData,
             success: function(data)
             {
-                console.log(data)
                 var outputData      = this.state.outputListData;
                 outputData[index]   = JSON.parse(data);
 

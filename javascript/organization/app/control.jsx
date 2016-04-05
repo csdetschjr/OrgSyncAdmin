@@ -315,6 +315,7 @@ var ActionBox = React.createClass({
             {
                 datum.status = this.props.outputData[i].status;
                 datum.name   = this.props.outputData[i].name;
+                datum.added  = this.props.outputData[i].added;
                 cmpCnt++;
 
                 if(!(datum.status == 1))
@@ -325,8 +326,6 @@ var ActionBox = React.createClass({
 
             data.push(datum);
         }
-
-        console.log()
 
         // Create the rows based on the status
         var rows = data.map(function(node){
@@ -342,11 +341,15 @@ var ActionBox = React.createClass({
             }
             else if(node.status == 1)
             {
+                if(node.added)
+                {
+                    var added = (<i className="fa fa-plus text-info"></i>)
+                }
                 return(
                     <tr key={node.input}>
                         <td>{node.input}</td>
                         <td>{node.name}</td>
-                        <td><i className="fa fa-check text-success"></i></td>
+                        <td><i className="fa fa-check text-success"></i> {added}</td>
                     </tr>
                 );
             }

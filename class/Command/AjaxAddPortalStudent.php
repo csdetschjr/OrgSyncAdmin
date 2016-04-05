@@ -68,15 +68,27 @@ class AjaxAddPortalStudent extends \AppSync\Command {
             exit;
         }
 
+        $id     = \AppSync\UtilityFunctions::getIDFromUsername($student->{'emailAddress'});
+        $added  = false;
+
+        // Check to see if the id returned as false indicating that the student does not exist
+        // in orgsync yet, then add the student to orgsync
+        if(!$id)
+        {
+            \AppSync\UtilityFunctions::addAccount($student->{'emailAddress'}, $student->{'firstName'}, $student->{'lastName'}, $student->{'ID'});
+            $id     = \AppSync\UtilityFunctions::getIDFromUsername($student->{'emailAddress'});
+            $added  = true;
+        }
+
         // Pass the student info and group id to the function responsible for interacting
         // with the OrgSync API
-        $status = $this->userToOrg($student->{'emailAddress'}, $portal);
+        $status = $this->userToOrg($id, $portal);
 
         // Create the response to the front end
         $name = $student->{'firstName'} . ' ' . $student->{'lastName'};
         if($status)
         {
-            $returnData = array('status' => 1, 'name' => $name);
+            $returnData = array('status' => 1, 'name' => $name, 'added' => $added);
         }
         else
         {
@@ -93,15 +105,10 @@ class AjaxAddPortalStudent extends \AppSync\Command {
     * @param int $user_id (can be array of user id's), int $group_id (groups id)
     * @return boolean (success or not)
     */
-    public function userToOrg($user_id, $org_id){
+    public function userToOrg($id, $org_id){
         // Use the UtilityFunctions to retrieve the info to be passed to the API
         $key      = \AppSync\UtilityFunctions::getOrgSyncKey();
         $base_url = \AppSync\UtilityFunctions::getOrgSyncURL();
-        $id       = \AppSync\UtilityFunctions::getIDFromUsername($user_id);
-        if(!$id)
-        {
-            return $id;
-        }
 
         // Create the url
         $import_url = $base_url."orgs/$org_id/accounts/add";

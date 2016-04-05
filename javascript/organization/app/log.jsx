@@ -133,7 +133,7 @@ var LogViewBox = React.createClass({
                     empty = false;
 
                     return (
-                        <tr key={node.occurredOn}>
+                        <tr>
                             <td>
                                 {node.occurredOn}
                             </td>
