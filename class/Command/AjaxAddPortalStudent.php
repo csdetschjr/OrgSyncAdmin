@@ -41,25 +41,15 @@ class AjaxAddPortalStudent extends \AppSync\Command {
         }
 
         // If the input is not a number then it must be a username, retrieve the banner
-        if(!is_numeric($input))
-        {
-            //Banner
-            $banner = \AppSync\UtilityFunctions::getBannerIDFromEmail($input);
-            // If false is returned then the username was not valid.
-            if($banner === false)
-            {
-                echo json_encode(array('status' => 0, 'message' => 'Email/Username was invalid'));
-                exit;
-            }
-        }
-        else
-        {
-            $banner = $input;
-        }
-
         // Retrieve the student and make sure it is not null, passing an error
         // back to the front end if it is
-        $student = \AppSync\UtilityFunctions::getStudentByBanner($banner);
+        if(!is_numeric($input))
+        {
+            $student = \AppSync\UtilityFunctions::getStudentByEmail($input);
+        }
+        else {
+            $student = \AppSync\UtilityFunctions::getStudentByBanner($input);
+        }
 
         if($student == null || isset($student->Message) || $student->emailAddress == null)
         {

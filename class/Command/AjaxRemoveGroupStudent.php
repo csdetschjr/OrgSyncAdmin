@@ -42,23 +42,16 @@ class AjaxRemoveGroupStudent extends \AppSync\Command {
         }
 
         // If the input is not a number then it must be a username, retrieve the banner
-        if(!is_numeric($input))
-        {
-            //Banner
-            $banner = \AppSync\UtilityFunctions::getBannerIDFromEmail($input);
-            if($banner === false)
-            {
-                echo json_encode(array('status' => 0));
-                exit;
-            }
-        }
-        else {
-            $banner = $input;
-        }
-
         // Retrieve the student and make sure it is not null, passing an error
         // back to the front end if it is
-        $student = \AppSync\UtilityFunctions::getStudentByBanner($banner);
+        if(!is_numeric($input))
+        {
+            $student = \AppSync\UtilityFunctions::getStudentByEmail($input);
+        }
+        else {
+            $student = \AppSync\UtilityFunctions::getStudentByBanner($input);
+        }
+        
         if($student == null || isset($student->Message) || $student->emailAddress == null)
         {
             $returnData = array('status' => 0);
@@ -68,7 +61,7 @@ class AjaxRemoveGroupStudent extends \AppSync\Command {
 
 
         $id     = \AppSync\UtilityFunctions::getIDFromUsername($student->{'emailAddress'});
-        
+
         // Pass the student info and group id to the function responsible for interacting
         // with the OrgSync API
         $status = $this->removeGroupAccount($id, $groupId);

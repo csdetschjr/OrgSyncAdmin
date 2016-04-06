@@ -54,7 +54,7 @@ class UtilityFunctions {
     }
 
     /**
-     * Retrieves student objects from banner
+     * Retrieves student objects from banner given the bannerid
      * @return student
      */
     public static function getStudentByBanner($banner)
@@ -80,6 +80,42 @@ class UtilityFunctions {
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($curl, CURLOPT_URL, $base_url."Faculty/$banner");
+            // Execute the curl request and store its result
+            $faculty = json_decode(curl_exec($curl));
+
+            return $faculty;
+        }
+    }
+
+    /**
+     * Retrieves student objects from banner given an email address
+     * @return student
+     */
+    public static function getStudentByEmail($email)
+    {
+        // Retrieve the url for Banner from the database
+        $base_url = \AppSync\SettingFactory::getSetting('banner_url')->getValue();
+
+        $parts = explode('@', $email);
+        $username = strtolower($parts[0]);
+
+        // Initialize curl
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_URL, $base_url."Student/$username");
+        // Execute the curl request and store its result
+        $student = json_decode(curl_exec($curl));
+        curl_close($curl);
+
+        if($student)
+        {
+            return $student;
+        }
+        else
+        {
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_URL, $base_url."Faculty/$username");
             // Execute the curl request and store its result
             $faculty = json_decode(curl_exec($curl));
 
@@ -117,33 +153,6 @@ class UtilityFunctions {
                                  time());
         \AppSync\LogEntryFactory::save($logEntry);
         return false;
-    }
-
-    /**
-     * Retrieves the students bannerId by using their email/username to find them
-     * in the sdr_member database.
-     * @return bannerId
-     */
-    public static function getBannerIDFromEmail($email){
-        // Breaks the email apart at the @ symbol, this should give the username
-        $parts = explode('@', $email);
-        $username = strtolower($parts[0]);
-        // If the username variable is not empty then retrieve the bannerId by the
-        // username from the sdr member table
-        if(!empty($username)){
-            $query = "SELECT * FROM sdr_member WHERE username='$username' ORDER BY id DESC";
-            $result = pg_query($query);
-            if($result && pg_num_rows($result) > 0){
-                $row = pg_fetch_assoc($result);
-                return $row['id'];
-            }
-            else{
-                return false;
-            }
-        }
-        else{
-            return false;
-        }
     }
 
         /**
