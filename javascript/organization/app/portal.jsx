@@ -39,7 +39,6 @@ var PortalViewBox = React.createClass({
         });
 
         this.props.clearError();
-        this.getGroupMembers(this.state.groupId);
     },
     // Sets the state to the completed state, and refreshs the list of portal members.
     completeState: function()
@@ -278,6 +277,12 @@ var PortalViewBox = React.createClass({
             this.setState({
                                 groupName   : "All Groups"
             });
+        }
+
+        console.log(this.state.toggleState)
+        if(this.state.toggleState == "COMPLETE")
+        {
+            this.changeToggleState("LIST");
         }
     },
     showGroup: function()
