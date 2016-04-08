@@ -499,7 +499,11 @@ var PortalViewBox = React.createClass({
 
         // If the state variable for showDropDown is set then show the dropdown otherwise
         // add a link that on click will change the showDropDown.
-        if(!this.state.showDropDown)
+        if(processing)
+        {
+            var link = (<div></div>);
+        }
+        else if(!this.state.showDropDown)
         {
             var link = (<a style={linkStyle} onClick={this.showGroup}>Switch Group</a>);
         }
