@@ -6,7 +6,6 @@ export default class ControlBox extends React.Component {
   render() {
     return <ControlActionBox add={this.props.add}
                              remove={this.props.remove}
-                             completeState={this.props.completeState}
                              state={this.props.state}
                              inputData={this.props.inputData}
                              outputData={this.props.outputData}
@@ -20,11 +19,6 @@ export default class ControlBox extends React.Component {
 
 // The main component for managing which component to display based on the parent state
 var ControlActionBox = React.createClass({
-    // Function for setting the state to complete via calling the parents complete function
-    completeState: function()
-    {
-        this.props.complete();
-    },
     // On click function for passing the values of the textbox for AddBox and RemoveBox up
     // to the parent class.
     click: function(text)
@@ -78,13 +72,12 @@ var ControlActionBox = React.createClass({
                 </div>
             );
         }
-        // If the state is set to either 'PROCESSING' or 'COMPLETE' then display the ActionBox component
-        else if(this.props.state == "PROCESSING" || this.props.state == "COMPLETE")
+        // If the state is set to either 'PROCESSING' then display the ActionBox component
+        else if(this.props.state == "PROCESSING")
         {
             return(
                 <div>
-                    <ActionBox complete={this.props.completeState}
-                               inputData={this.props.inputData}
+                    <ActionBox inputData={this.props.inputData}
                                outputData={this.props.outputData}
                                state={this.props.state} />
                 </div>
@@ -267,11 +260,6 @@ var RemoveBox = React.createClass({
 });
 
 var ActionBox = React.createClass({
-    // A function for calling the parent class' complete function which sets the state to COMPLETE
-    completeState: function()
-    {
-        this.props.complete();
-    },
     // Render Function
     render: function()
     {
@@ -281,14 +269,6 @@ var ActionBox = React.createClass({
             return (
                 <div></div>
             );
-        }
-
-        // // If the state is in 'PROCESSING' and the inputData is the same size as the outputData
-        // // then call the completeState function
-        if(this.props.state == "PROCESSING"
-            && this.props.inputData.length == this.props.outputData.length)
-        {
-            this.completeState();
         }
 
         // Set up the style variables

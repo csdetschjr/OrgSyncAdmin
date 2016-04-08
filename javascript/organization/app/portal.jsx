@@ -38,16 +38,16 @@ var PortalViewBox = React.createClass({
                             outputListData: []
         });
 
-        this.props.clearError();
-    },
-    // Sets the state to the completed state, and refreshs the list of portal members.
-    completeState: function()
-    {
-        this.setState({
-                            toggleState : "COMPLETE"
-        });
+        if(newState == 'LIST')
+        {
+            this.props.listMembers(this.props.portal);
+            if(this.state.groupId != -1)
+            {
+                this.getGroupMembers(this.state.groupId);
+            }
+        }
 
-        this.props.listMembers(this.props.portal);
+        this.props.clearError();
     },
     // Parses the text provided by the ControlBox into an array of strings,
     // and then passes the array to the createData function as well as a flag
@@ -256,6 +256,10 @@ var PortalViewBox = React.createClass({
         {
             this.getGroupMembers(newGroup);
         }
+        else
+        {
+            this.props.listMembers();
+        }
 
         var list = this.props.groupList;
 
@@ -279,7 +283,7 @@ var PortalViewBox = React.createClass({
             });
         }
 
-        if(this.state.toggleState == "COMPLETE")
+        if(this.state.toggleState == "PROCESSING")
         {
             this.changeToggleState("LIST");
         }
@@ -484,6 +488,14 @@ var PortalViewBox = React.createClass({
         // Add style to make the link font larger
         var linkStyle = {fontSize: '12px'};
         var link;
+        var processing = false;
+
+        // If the data arrays are equal in length then the processing stage should have completed
+        // and we can show the toggle box and group pick box again.
+        if(this.state.inputListData.length != this.state.outputListData.length)
+        {
+            processing = true;
+        }
 
         // If the state variable for showDropDown is set then show the dropdown otherwise
         // add a link that on click will change the showDropDown.
@@ -503,6 +515,8 @@ var PortalViewBox = React.createClass({
             );
         }
 
+
+
         return(
             <div>
                 <h2>
@@ -510,11 +524,14 @@ var PortalViewBox = React.createClass({
                 </h2>
                 {dropdown}
                 <div className="col-md-12">
-                    <ToggleBox toggle={this.changeToggleState} state={this.state.toggleState} clear={this.clear} groupId={this.state.groupId}
-                        userPermissions={this.props.userPermissions}/>
+                    <ToggleBox toggle={this.changeToggleState}
+                               state={this.state.toggleState}
+                               clear={this.clear}
+                               groupId={this.state.groupId}
+                               userPermissions={this.props.userPermissions}
+                               processing={processing}/>
                     <ControlBox add={this.addSubmit}
                                 remove={this.removeSubmit}
-                                completeState={this.completeState}
                                 state={this.state.toggleState}
                                 inputData={this.state.inputListData}
                                 outputData={this.state.outputListData}
@@ -540,7 +557,7 @@ var GroupPickBox = React.createClass({
     render: function()
     {
         // if the state is 'PROCESSING'
-        if(this.props.state == "PROCESSING")
+        if(this.props.processing)
         {
             return (
                 <div></div>
@@ -609,7 +626,7 @@ var ToggleBox = React.createClass({
     render: function()
     {
         // If the state is set to 'PROCESSING' display nothing
-        if(this.props.state == "PROCESSING")
+        if(this.props.processing)
         {
             return (
                 <div></div>
@@ -698,7 +715,7 @@ var ButtonBox = React.createClass({
     render: function()
     {
         // If the state is in 'PROCESSING' or the user does not have purge permission then display an empty div
-        if(this.props.state == "PROCESSING" || !this.props.userPermissions.purge)
+        if(!this.props.userPermissions.purge)
         {
             return (
                 <div></div>
