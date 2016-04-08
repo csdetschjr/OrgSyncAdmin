@@ -279,7 +279,6 @@ var PortalViewBox = React.createClass({
             });
         }
 
-        console.log(this.state.toggleState)
         if(this.state.toggleState == "COMPLETE")
         {
             this.changeToggleState("LIST");
@@ -324,10 +323,10 @@ var PortalViewBox = React.createClass({
         $.ajax({
             url     : 'index.php?module=appsync&action=AjaxAddPortalStudent',
             type    : 'POST',
-            async   : false,
             data    : inputData,
             success: function(data)
             {
+
                 var outputData      = this.state.outputListData;
                 outputData[index]   = JSON.parse(data);
 
@@ -361,7 +360,6 @@ var PortalViewBox = React.createClass({
         $.ajax({
             url     : 'index.php?module=appsync&action=AjaxAddGroupStudent',
             type    : 'POST',
-            async   : false,
             data    : inputData,
             success: function(data)
             {
@@ -397,7 +395,6 @@ var PortalViewBox = React.createClass({
         $.ajax({
             url     : 'index.php?module=appsync&action=AjaxRemovePortalStudent',
             type    : 'POST',
-            async   : false,
             data    : inputData,
             success: function(data)
             {
@@ -434,7 +431,6 @@ var PortalViewBox = React.createClass({
         $.ajax({
             url     : 'index.php?module=appsync&action=AjaxRemoveGroupStudent',
             type    : 'POST',
-            async   : false,
             data    : inputData,
             success: function(data)
             {

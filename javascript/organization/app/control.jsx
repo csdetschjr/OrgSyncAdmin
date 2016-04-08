@@ -127,7 +127,7 @@ var ListBox = React.createClass({
         }
 
         // If the members array is empty just return a line about there being no members present
-        if(members.length == 0)
+        if(members == false || members.length == 0)
         {
             return (
                 <div style={noMemberStyle}>
@@ -275,7 +275,7 @@ var ActionBox = React.createClass({
     // Render Function
     render: function()
     {
-        // If the inputData array is undefined, then just return an empty div
+        // // If the inputData array is undefined, then just return an empty div
         if(this.props.inputData == undefined)
         {
             return (
@@ -283,8 +283,8 @@ var ActionBox = React.createClass({
             );
         }
 
-        // If the state is in 'PROCESSING' and the inputData is the same size as the outputData
-        // then call the completeState function
+        // // If the state is in 'PROCESSING' and the inputData is the same size as the outputData
+        // // then call the completeState function
         if(this.props.state == "PROCESSING"
             && this.props.inputData.length == this.props.outputData.length)
         {
@@ -299,6 +299,7 @@ var ActionBox = React.createClass({
         var i             = 0;
         var cmpCnt        = 0;
         var errorOccurred = false;
+        var errorCnt      = 0;
 
         // Loop through the inputData array adding
         for(i; i < this.props.inputData.length; i++)
@@ -321,11 +322,70 @@ var ActionBox = React.createClass({
                 if(!(datum.status == 1))
                 {
                     errorOccurred = true;
+                    errorCnt++;
                 }
             }
 
             data.push(datum);
         }
+        // Calculate the percentage for the progress bar
+        var percentComplete = (cmpCnt / this.props.inputData.length) * 100;
+
+        var table = (<div></div>);
+        if(data.length > 50)
+        {
+            table = <LargeProgressTable data={data}
+                                        errorOccurred={errorOccurred} />
+        }
+        else
+        {
+            table = <SmallProgressTable data={data}
+                                        errorOccurred={errorOccurred} />
+        }
+
+        return(
+            <div style={controlStyle}>
+                <ProgressText completedNum={cmpCnt}
+                              total={this.props.inputData.length}
+                              errorNum={errorCnt}/>
+                <div className="row">
+                    <div className="col-md-6">
+                        <ProgressBarBox state={this.props.state}
+                                        percentComplete={percentComplete}
+                                        errorOccurred={errorOccurred}/>
+                    </div>
+                </div>
+                {table}
+            </div>
+        );
+    }
+});
+
+var ProgressText = React.createClass({
+    render: function()
+    {
+        var errorCntMsg = (<div></div>);
+        if(this.props.errorNum == 1)
+        {
+            errorCntMsg = (<p><i className="fa fa-times text-danger"></i> {this.props.errorNum} error has occurred</p>);
+        }
+        else if(this.props.errorNum > 0)
+        {
+            errorCntMsg = (<p><i className="fa fa-times text-danger"></i> {this.props.errorNum} errors have occurred</p>);
+        }
+        return (
+                <div>
+                    <p><i className="fa fa-check text-success"></i> {this.props.completedNum} of {this.props.total} completed</p>
+                    {errorCntMsg}
+                </div>
+        );
+    }
+});
+
+var SmallProgressTable = React.createClass({
+    render: function()
+    {
+        var data = this.props.data;
 
         // Create the rows based on the status
         var rows = data.map(function(node){
@@ -375,39 +435,83 @@ var ActionBox = React.createClass({
             }
         });
 
-        // Calculate the percentage for the progress bar
-        var percentComplete = (cmpCnt / this.props.inputData.length) * 100;
-
-        return(
-            <div style={controlStyle}>
-                <div className="row">
-                    <div className="col-md-6">
-                        <ProgressBarBox state={this.props.state}
-                                        percentComplete={percentComplete}
-                                        errorOccurred={errorOccurred}/>
-                    </div>
+        return (
+            <div className="row">
+                <div className="col-md-6">
+                    <table className="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Input</th>
+                                <th>Student Name</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows}
+                        </tbody>
+                    </table>
                 </div>
-                <div className="row">
-                    <div className="col-md-6">
-                        <table className="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Input</th>
-                                    <th>Student Name</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {rows}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
             </div>
-        );
+        )
+
     }
 });
+
+var LargeProgressTable = React.createClass({
+    render: function()
+    {
+        if(!this.props.errorOccurred)
+        {
+            return (<div></div>);
+        }
+
+        var data = this.props.data;
+
+        // Create the rows based on the status but only if they failed
+        var rows = data.map(function(node){
+            if(node.status == 0)
+            {
+                return(
+                    <tr key={node.input}>
+                        <td>{node.input}</td>
+                        <td><i className="fa fa-times text-danger"></i> Error retrieving student</td>
+                        <td><i className="fa fa-times text-danger"></i></td>
+                    </tr>
+                );
+            }
+            else if(node.status == 2)
+            {
+                return(
+                    <tr key={node.input}>
+                        <td>{node.input}</td>
+                        <td>{node.name}</td>
+                        <td><i className="fa fa-times text-danger"></i></td>
+                    </tr>
+                );
+            }
+        });
+
+        return (
+            <div className="row">
+                <div className="col-md-6">
+                    <table className="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Input</th>
+                                <th>Student Name</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        )
+    }
+});
+
 
 var OptionBox = React.createClass({
     // Calls the parent class listRemove function and passes the appropriate email for
