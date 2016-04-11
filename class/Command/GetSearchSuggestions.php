@@ -61,11 +61,12 @@ class GetSearchSuggestions {
     private function portalFuzzySearch($string, $umbrellaId, $orgList)
     {
         $portList = array();
+        $lowerString = strtolower($string);
         foreach ($orgList as $org) {
             if($org->getUmbrellaId() == $umbrellaId)
             {
                 $name = strtolower($org->getName());
-                if(strpos($name, $string) !== false)
+                if(strpos($name, $lowerString) !== false)
                 {
                     array_push($portList, $org);
                 }
